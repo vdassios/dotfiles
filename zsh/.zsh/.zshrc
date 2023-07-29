@@ -32,6 +32,8 @@ alias fd="fdfind"
 alias nnn="nnn -e"
 alias luamake=/home/vdassios/.config/nvim/lua-language-server/3rd/luamake/luamake
 alias ls="ls --color=auto"
+alias vpnup="sudo wg-quick up wg0"
+alias vpndown="sudo wg-quick down wg0"
 
 
 # fnm
