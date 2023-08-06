@@ -47,4 +47,11 @@ vim.api.nvim_create_autocmd("InsertLeave", {
   command = "set nopaste"
 })
 
+-- Persistent folding
+vim.cmd([[augroup remember_folds
+  autocmd!
+  autocmd BufWinLeave *.* mkview
+  autocmd BufWinEnter *.* silent! loadview
+augroup END]])
+
 -- vim.opt.formatoptions:append { 'r' }
