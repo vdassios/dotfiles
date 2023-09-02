@@ -14,7 +14,7 @@ telescope.setup {
     layout_strategy = 'vertical',
     layout_config = { height = 0.95 },
     path_display = { "truncate" },
-    file_ignore_patterns = { "backup" },
+    file_ignore_patterns = { "backup", ".git/", "^node_modules/", "%.jpeg", "%.png", "CHANGELOG.md" },
     mappings = {
       n = {
         ['q'] = actions.close
