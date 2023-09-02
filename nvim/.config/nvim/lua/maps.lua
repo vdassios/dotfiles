@@ -4,6 +4,9 @@ local keymap = vim.keymap
 keymap.set('i', 'jk', '<ESC>')
 keymap.set('i', 'kj', '<ESC>')
 
+-- Double Esc to clear highlights
+keymap.set('n', '<ESC><ESC>', ':noh<cr>', { silent = true })
+
 -- Do not yank with x
 keymap.set('n', 'x', '"_x')
 
