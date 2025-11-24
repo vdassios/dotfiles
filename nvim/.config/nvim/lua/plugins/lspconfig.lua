@@ -165,6 +165,7 @@ return {
 
       -- Diagnostic Config
       -- See :help vim.diagnostic.Opts
+      -- TIP: <C-w>d shows diagnostic at cursor in a floating window.
       vim.diagnostic.config {
         severity_sort = true,
         float = { border = 'rounded', source = 'if_many' },
