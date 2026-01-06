@@ -61,6 +61,9 @@ z4h init || return
 # Extend PATH.
 path=(~/bin $path)
 
+# add ~/.local/bin
+export PATH="$HOME/.local/bin:$PATH"
+
 # Export environment variables.
 export GPG_TTY=$TTY
 
