@@ -1,14 +1,16 @@
+text-color=#cdd6f4
+border-color=#89b4fa
+background-color=#1e1e2e
+width=220
+height=110
+padding=8
+border-size=1
+border-radius=4
+font=MesloLGS Nerd Font 10 
 anchor=top-right
+outer-margin=5
 default-timeout=5000
-width=420
-outer-margin=20
-padding=10,15
-border-size=2
 max-icon-size=32
-font=sans-serif 14px
-
-[app-name=Spotify]
-invisible=1
 
 [mode=do-not-disturb]
 invisible=true
@@ -18,4 +20,3 @@ invisible=false
 
 [urgency=critical]
 default-timeout=0
-layer=overlay
