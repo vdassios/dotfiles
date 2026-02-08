@@ -1,0 +1,49 @@
+* {
+	border: none;
+	border-radius: 0;
+	min-height: 0;
+	font-family: "MesloLGS Nerd Font";
+	font-size: 12px;
+}
+
+#cpu,
+#battery,
+#pulseaudio,
+#bluetooth,
+#custom {
+	min-width: 8px;
+	margin: 0 8px;
+}
+
+#tooltip {
+	margin-bottom: 1px;
+}
+
+
+#network {
+	margin-right: 8px;
+}
+
+.hidden {
+	opacity: 0;
+}
+
+window#waybar {
+	background-color: #1e1e2e;
+	color: #cdd6f4;
+}
+
+#workspaces button {
+	padding: 2px;
+	color: #cdd6f4;
+}
+
+#workspaces button.active {
+	background-color: #89b4fa;
+	color: #1e1e2e;
+	opacity: 0.8;
+}
+
+#workspaces button.empty {
+	opacity: 0.5;
+}
