@@ -114,8 +114,8 @@ alias mkexec='chmod +x'
 setopt glob_dots     # no special treatment for file names with a leading dot
 setopt no_auto_menu  # require an extra TAB press to open the completion menu
 
-# autojump
-[[ -s /home/vdassios/.autojump/etc/profile.d/autojump.sh ]] && source /home/vdassios/.autojump/etc/profile.d/autojump.sh
+# zsh-z for directory jumping
+source  $HOME/zsh-z.plugin.zsh
 autoload -U compinit && compinit -u
 
 # yazi
@@ -134,4 +134,4 @@ if [ -d "$FNM_PATH" ]; then
   eval "`fnm env`"
 fi
 
-# eval "$(fnm env --use-on-cd --shell zsh)"
+eval "$(fnm env --use-on-cd --shell zsh)"
