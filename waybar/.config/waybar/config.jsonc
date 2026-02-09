@@ -9,6 +9,7 @@
   "modules-center": ["clock"],
   "modules-right": [
     // "group/tray-expander",
+    "hyprland/language",
     "bluetooth",
     "network",
     "pulseaudio",
@@ -83,6 +84,11 @@
       "warning": 20,
       "critical": 10,
     },
+  },
+  "hyprland/language": {
+    "format": "{}",
+    "format-en": "us",
+    "format-gr": "gr",
   },
   "bluetooth": {
     "format": "",
