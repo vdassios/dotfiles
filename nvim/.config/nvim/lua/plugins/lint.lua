@@ -10,6 +10,7 @@ return {
         typescript = { 'eslint_d' },
         javascriptreact = { 'eslint_d' },
         typescriptreact = { 'eslint_d' },
+        css = { 'eslint_d' },
         markdown = { 'markdownlint' },
         json = { 'jsonlint' },
         dockerfile = { 'hadolint' },

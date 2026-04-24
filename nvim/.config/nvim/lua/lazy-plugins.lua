@@ -28,7 +28,9 @@ require('lazy').setup({
 
   -- require 'plugins.which-key',
   --
-  require 'plugins.telescope',
+  require 'plugins.fzf-lua',
+  --
+  require 'plugins.oil',
   --
   require 'plugins.lspconfig',
   --
@@ -44,7 +46,11 @@ require('lazy').setup({
   --
   -- require 'plugins.mini',
   --
-  require 'plugins.treesitter',
+  {
+    'nvim-treesitter/nvim-treesitter',
+    lazy = false,
+    build = ':TSUpdate',
+  },
 
   -- require 'plugins.debug',
   require 'plugins.lint',
