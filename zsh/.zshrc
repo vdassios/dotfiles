@@ -74,7 +74,10 @@ path=(~/bin $path)
 export PATH="$HOME/.local/bin:$PATH"
 
 # add Java to path
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+# linux
+# export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+# macos
+export JAVA_HOME="$HOME/.local/jdks/jdk-11.0.31+11/Contents/Home"
 export PATH=$JAVA_HOME/bin:$PATH
 
 # Export environment variables.
@@ -82,6 +85,17 @@ export GPG_TTY=$TTY
 
 export EDITOR='nvim' 
 
+# history setup
+HISTFILE=$HOME/.zhistory
+SAVEHIST=1000
+HISTSIZE=999
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+
+# ---- Zoxide (better cd) ----
+eval "$(zoxide init zsh)"
 
 # Source additional local files if they exist.
 z4h source ~/.env.zsh
@@ -148,3 +162,10 @@ if [ -d "$FNM_PATH" ]; then
 fi
 
 eval "$(fnm env --use-on-cd --shell zsh)"
+
+# opencode
+export PATH="$HOME/.opencode/bin:$PATH"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
