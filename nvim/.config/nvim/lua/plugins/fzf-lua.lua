@@ -5,11 +5,15 @@ return {
     dependencies = {
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
+    opts = {
+      file_ignore_patterns = {
+        'node_modules/',
+      },
+    },
     config = function()
       local fzf = require 'fzf-lua'
       fzf.setup {}
       fzf.register_ui_select()
-
       vim.keymap.set('n', '<leader>sk', fzf.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', ';t', fzf.help_tags, { desc = 'Lists available help tags and opens a new window with the relevant help info on <cr>' })
       vim.keymap.set('n', ';f', fzf.files, { desc = 'Lists files in your current working directory, respects .gitignore' })

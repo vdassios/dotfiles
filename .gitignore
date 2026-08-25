@@ -1,0 +1,2 @@
+# tmux plugin clones (tpm installs these; ~/.config/tmux symlinks into this repo)
+tmux/.config/tmux/plugins/
