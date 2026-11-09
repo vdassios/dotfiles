@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Yazi
+GenericName=File Manager
+Comment=Open folders in yazi (same window style as SUPER+F)
+Icon=yazi
+# The systemd/D-Bus activation PATH does not include ~/.local/bin, so resolve
+# launch-tui through $HOME instead of relying on PATH.
+Exec=sh -c "exec \\"\\$HOME/.local/bin/launch-tui\\" yazi \\"\\$1\\"" sh %f
+Terminal=false
+MimeType=inode/directory;
+Categories=System;FileTools;FileManager;
+NoDisplay=true

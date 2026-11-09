@@ -1,5 +1,9 @@
 update-desktop-database /usr/share/applications
 
+# Open folders with yazi (yazi-open.desktop comes from the `applications` Stow package)
+update-desktop-database ~/.local/share/applications
+xdg-mime default yazi-open.desktop inode/directory
+
 # Open all images with imv
 xdg-mime default imv.desktop image/png
 xdg-mime default imv.desktop image/jpeg
