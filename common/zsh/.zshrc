@@ -77,7 +77,7 @@ setopt hist_expire_dups_first
 setopt hist_ignore_dups
 setopt hist_verify
 
-# ---- Zoxide (better cd) ----
+# zoxide: `z` jumps to a frecent directory, `zi` picks one with fzf.
 eval "$(zoxide init zsh)"
 
 # Source additional local files if they exist.
@@ -117,9 +117,6 @@ alias mkexec='chmod +x'
 # Set shell options: http://zsh.sourceforge.net/Doc/Release/Options.html.
 setopt glob_dots     # no special treatment for file names with a leading dot
 setopt no_auto_menu  # require an extra TAB press to open the completion menu
-
-# zsh-z for directory jumping (z4h init has already run compinit)
-source $HOME/zsh-z.plugin.zsh
 
 # yazi
 function y() {

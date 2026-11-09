@@ -66,8 +66,7 @@ On macOS:
 - **[Zsh](https://www.zsh.org/)** — login shell.
 - **[zsh4humans (z4h)](https://github.com/romkatv/zsh4humans)** — Zsh distribution managing fzf, autosuggestions, syntax-highlighting, and SSH teleportation.
 - **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Zsh prompt, configured via `common/p10k/.p10k.zsh`.
-- **[zsh-z](https://github.com/agkozak/zsh-z)** — frecency-based `z` directory jumper (vendored as `common/zsh/zsh-z.plugin.zsh`).
-- **[zoxide](https://github.com/ajeetdsouza/zoxide)** — smarter `cd` (`zoxide init zsh`).
+- **[zoxide](https://github.com/ajeetdsouza/zoxide)** — frecency-based directory jumper: `z <query>`, or `zi` to pick with fzf.
 - **[fnm](https://github.com/Schniz/fnm)** — fast Node.js version manager, with `--use-on-cd`.
 - **[direnv](https://direnv.net/)** — per-directory environment variables via `.envrc`, enabled through z4h.
 - **[fzf](https://github.com/junegunn/fzf)** — fuzzy finder; color palette overridden to match Catppuccin Macchiato.

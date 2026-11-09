@@ -21,7 +21,7 @@ Rules when adding or changing configs:
 Two directories break the Stow pattern and need manual handling:
 
 - `scripts/` — **not** a Stow package. Per `scripts/README.md`, these `.sh` files must be copied (or symlinked) into `~/.local/bin/` by hand and made executable. Many Hyprland keybindings and systemd units invoke these by basename, so renaming a script requires updating its consumers (grep `linux/hypr/.config/hypr/bindings.lua` and `linux/systemd/.config/systemd/user/*.service`).
-- `common/zsh/` — ships `.zshrc` at the package root (not under `.config/`), because z4h expects `~/.zshrc`. The vendored `zsh-z.plugin.zsh` is sourced from `$HOME/zsh-z.plugin.zsh` in `.zshrc:129`, so it lives at `$HOME`, not `~/.config/`.
+- `common/zsh/` — ships `.zshrc` at the package root (not under `.config/`), because z4h expects `~/.zshrc`.
 
 ## Cross-file wiring to watch
 
