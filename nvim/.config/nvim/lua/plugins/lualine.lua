@@ -9,7 +9,7 @@ return {
       },
       sections = {
         lualine_x = { 'filetype' },
-        lualine_y = { '' },
+        lualine_y = {},
       },
     },
   },
