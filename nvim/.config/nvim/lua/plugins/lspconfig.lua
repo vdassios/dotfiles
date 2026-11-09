@@ -197,17 +197,33 @@ return {
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      -- Applied to every server config below. See `:help lsp-config`.
+      vim.lsp.config('*', {
+        capabilities = require('blink.cmp').get_lsp_capabilities(),
+      })
 
-      -- Enable the following language servers
-      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
+      -- Server overrides. These are merged over the defaults that nvim-lspconfig
+      -- ships in its `lsp/` directory, which Neovim picks up off the runtimepath.
       --
-      --  Add any additional override configuration in the following tables. Available keys are:
+      --  Available keys are:
       --  - cmd (table): Override the default command used to start the server
       --  - filetypes (table): Override the default list of associated filetypes for the server
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
+      --  - root_markers (table): Files/dirs marking the project root
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+
+      -- vue_ls (v3+) only handles the HTML/CSS parts of a .vue file and forwards
+      -- TypeScript requests to ts_ls, which needs the Vue plugin loaded and must
+      -- itself attach to vue buffers. See https://github.com/vuejs/language-tools/wiki/Neovim
+      local vue_plugin = {
+        name = '@vue/typescript-plugin',
+        -- $MASON is set by mason.setup(), which runs before this as a dependency.
+        location = vim.fn.expand '$MASON/packages/vue-language-server/node_modules/@vue/language-server',
+        languages = { 'vue' },
+        configNamespace = 'typescript',
+      }
+
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -219,19 +235,25 @@ return {
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
         --
         cssls = {},
         tailwindcss = {
-          root_dir = function(...)
-            return require('lspconfig.util').root_pattern '.git'(...)
-          end,
+          -- Anchor the project root at the repo, not at a nested package.
+          root_markers = { '.git' },
         },
         ts_ls = {
-          root_dir = function(...)
-            return require('lspconfig.util').root_pattern '.git'(...)
+          -- Only attach inside a git project. `on_dir` is deliberately not called
+          -- when there is no root, which replaces the old `single_file_support = false`.
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, '.git')
+            if root then
+              on_dir(root)
+            end
           end,
-          single_file_support = false,
+          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue' },
+          init_options = {
+            plugins = { vue_plugin },
+          },
           settings = {
             typescript = {
               inlayHints = {
@@ -265,7 +287,6 @@ return {
             },
           },
         },
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -281,6 +302,10 @@ return {
           },
         },
       }
+
+      for name, config in pairs(servers) do
+        vim.lsp.config(name, config)
+      end
 
       -- Ensure the servers and tools above are installed
       --
@@ -304,16 +329,11 @@ return {
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        -- v2 dropped `handlers`; installed servers are enabled via `vim.lsp.enable()`.
+        -- stylua is installed for conform (see plugins/conform.lua), but lspconfig
+        -- also ships an `lsp/stylua.lua`, so exclude it or it attaches as a second
+        -- formatting client on every Lua buffer.
+        automatic_enable = { exclude = { 'stylua' } },
       }
     end,
   },
