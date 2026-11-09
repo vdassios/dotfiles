@@ -55,6 +55,14 @@ return {
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
       -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
+      -- nvim-lspconfig skips defining `:LspInfo` when Nvim provides the builtin `:lsp` command (0.12+),
+      -- so restore it to list the names of the clients attached to the current buffer.
+      vim.api.nvim_create_user_command('LspInfo', function()
+        vim.print(vim.tbl_map(function(c)
+          return c.name
+        end, vim.lsp.get_clients { bufnr = 0 }))
+      end, { desc = 'List LSP clients attached to the current buffer' })
+
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
