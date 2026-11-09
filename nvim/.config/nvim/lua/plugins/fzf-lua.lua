@@ -10,9 +10,9 @@ return {
         'node_modules/',
       },
     },
-    config = function()
+    config = function(_, opts)
       local fzf = require 'fzf-lua'
-      fzf.setup {}
+      fzf.setup(opts)
       fzf.register_ui_select()
       vim.keymap.set('n', '<leader>sk', fzf.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', ';t', fzf.help_tags, { desc = 'Lists available help tags and opens a new window with the relevant help info on <cr>' })
