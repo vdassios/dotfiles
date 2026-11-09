@@ -1,0 +1,7 @@
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+# Flavor installed via `ya pkg add yazi-rs/flavors:catppuccin-macchiato`
+# (pinned in package.toml; restore with `ya pkg install`).
+[flavor]
+dark  = "catppuccin-macchiato"
+light = "catppuccin-macchiato"
