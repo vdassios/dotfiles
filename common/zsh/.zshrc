@@ -57,6 +57,10 @@ export FZF_DEFAULT_OPTS=" \
 --color=selected-bg:#494D64 \
 --color=border:#6E738D,label:#CAD3F5"
 
+# Keep only the first copy of each PATH entry, so nested shells and the
+# prepends below (and the OS fragment's PATH=...) don't pile up duplicates.
+typeset -U PATH path
+
 # Extend PATH.
 path=(~/bin $path)
 
