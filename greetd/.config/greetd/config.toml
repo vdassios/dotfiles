@@ -1,0 +1,14 @@
+# greetd config — installed to /etc/greetd/config.toml by
+# scripts/first-run/greetd.sh (greetd reads /etc, not ~/.config, and the
+# `greeter` user cannot read $HOME, so this file and the banner are copied).
+#
+# No [initial_session]: the disk is unlocked by the TPM, so this login is the
+# only password prompt on boot.
+
+[terminal]
+vt = 1
+
+[default_session]
+# `command` is run by sh(1), so the $(cat ...) is expanded at greeter start.
+command = "tuigreet --time --remember --asterisks --greet-align left --greeting \"$(cat /etc/greetd/banner)\" --cmd start-hyprland"
+user = "greeter"

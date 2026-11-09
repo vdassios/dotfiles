@@ -28,7 +28,7 @@ The repository is organized as GNU Stow-style packages — each top-level direct
 - **[Mako](https://github.com/emersion/mako)** — lightweight Wayland notification daemon.
 - **[swaybg](https://github.com/swaywm/swaybg)** — Wayland wallpaper setter (loads `~/Wallpapers/cats.png`).
 - **[SwayOSD](https://github.com/ErikReider/SwayOSD)** — GTK on-screen display for volume / brightness / caps-lock.
-- **[greetd](https://sr.ht/~kennylevinsen/greetd/)** — minimal login manager; customized `banner.txt` greets at the TTY.
+- **[greetd](https://sr.ht/~kennylevinsen/greetd/) + [tuigreet](https://github.com/apognu/tuigreet)** — login manager on VT1; the only password prompt at boot (the LUKS root is unlocked by TPM2). `greetd/.config/greetd/` holds `config.toml` and the `banner.txt` greeting; `scripts/first-run/greetd.sh` copies them into `/etc/greetd/`.
 - **[uwsm](https://github.com/Vladimir-csp/uwsm)** — Universal Wayland Session Manager, used to launch apps under systemd user scopes.
 - **[polkit-gnome](https://gitlab.gnome.org/Archive/policykit-gnome)** — PolicyKit authentication agent for privileged GUI prompts.
 - **[fcitx5](https://fcitx-im.org/)** — input method framework (multilingual typing).
