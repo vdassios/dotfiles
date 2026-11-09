@@ -17,6 +17,6 @@ Target = elephant*
 [Action]
 Description = Restarting Walker services after system update
 When = PostTransaction
-Exec = $OMARCHY_PATH/bin/omarchy-restart-walker
+Exec = $HOME/.local/bin/restart-walker
 EOF
 
