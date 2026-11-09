@@ -280,6 +280,10 @@ return {
           },
         },
         html = {},
+        vue_ls = {},
+        astro = {},
+        svelte = {},
+        tombi = {},
         yamlls = {
           settings = {
             yaml = {
@@ -323,6 +327,14 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        -- Formatters and linters used by plugins/conform.lua and plugins/lint.lua
+        'prettierd',
+        'prettier',
+        'eslint_d',
+        'markdownlint',
+        'rustywind',
+        'beautysh',
+        'jsonlint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
