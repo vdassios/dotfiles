@@ -1,7 +1,5 @@
-# This is a demo config to showcase some of the most important commands.
-# It is meant to be changed and configured, as it is intentionally kept sparse.
-# For a (much) more advanced configuration example see my dotfiles:
-# https://github.com/FelixKratz/dotfiles
+# Stowed to ~/.config/sketchybar/sketchybarrc from macos/sketchybar in ~/dotfiles.
+# Launched by AeroSpace (after-startup-command in aerospace.toml).
 
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
@@ -51,7 +49,7 @@ for sid in $(aerospace list-workspaces --all); do
         background.drawing=off \
         label="$sid" \
         click_script="aerospace workspace $sid" \
-        script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+        script="$PLUGIN_DIR/aerospace.sh $sid"
 done
 
 ##### Adding Left Items #####
