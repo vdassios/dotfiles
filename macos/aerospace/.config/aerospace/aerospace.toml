@@ -70,9 +70,10 @@ inner.horizontal = 5
 inner.vertical = 5
 outer.left = 5
 outer.bottom = 5
-# The macOS menu bar auto-hides, so SketchyBar (height=40 in sketchybarrc) is the only
-# top bar: leave its height plus the usual 5px gap so windows don't slide under it.
-outer.top = 45
+# The macOS menu bar auto-hides, but on the notched MacBook Air macOS still keeps windows
+# out of the 32pt strip beside the notch, and AeroSpace measures gaps from below it.
+# SketchyBar is 40pt tall (height in sketchybarrc), so 40 - 32 + 5 leaves the usual 5pt gap.
+outer.top = 13
 outer.right = 5
 
 # 'main' binding mode declaration
