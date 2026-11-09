@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install the greetd config + tuigreet banner into /etc/greetd.
+# Boot chain 4/4 — install the greetd config + tuigreet banner into /etc/greetd.
 # Sources live in the `greetd` Stow package; they are copied (not symlinked)
 # because greetd runs the greeter as the `greeter` user, which cannot read $HOME.
 set -euo pipefail
