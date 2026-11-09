@@ -41,7 +41,7 @@ The repository is organized as GNU Stow-style packages — each top-level direct
 - **[Alacritty](https://alacritty.org/)** — GPU-accelerated terminal emulator. Uses MesloLGS Nerd Font and a Catppuccin Macchiato palette.
 - **[Zsh](https://www.zsh.org/)** — login shell.
 - **[zsh4humans (z4h)](https://github.com/romkatv/zsh4humans)** — Zsh distribution managing fzf, autosuggestions, syntax-highlighting, and SSH teleportation.
-- **[Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh)** — pulled in via `z4h install`; the `emoji-clock` plugin is loaded and `diagnostics.zsh` is sourced.
+- **[Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh)** — pulled in via `z4h install`; only the `emoji-clock` plugin is loaded.
 - **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Zsh prompt, configured via `p10k/.p10k.zsh`.
 - **[zsh-z](https://github.com/agkozak/zsh-z)** — frecency-based `z` directory jumper (vendored as `zsh/zsh-z.plugin.zsh`).
 - **[fnm](https://github.com/Schniz/fnm)** — fast Node.js version manager, with `--use-on-cd`.
