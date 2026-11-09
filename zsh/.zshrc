@@ -118,9 +118,8 @@ alias mkexec='chmod +x'
 setopt glob_dots     # no special treatment for file names with a leading dot
 setopt no_auto_menu  # require an extra TAB press to open the completion menu
 
-# zsh-z for directory jumping
-source  $HOME/zsh-z.plugin.zsh
-autoload -U compinit && compinit -u
+# zsh-z for directory jumping (z4h init has already run compinit)
+source $HOME/zsh-z.plugin.zsh
 
 # yazi
 function y() {
