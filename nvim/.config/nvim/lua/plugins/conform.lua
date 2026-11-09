@@ -46,7 +46,7 @@ return {
         astro = { 'prettierd', 'prettier', stop_after_first = true },
         svelte = { 'prettierd', 'prettier', stop_after_first = true },
         dockerfile = { 'dockerfmt' },
-        css = { 'rustywind', 'prettierd', 'prettier' },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
         toml = { 'tombi' },
         http = { 'injected' },
         markdown = { 'injected', 'markdownlint' },

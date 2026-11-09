@@ -283,7 +283,6 @@ return {
         'prettier',
         'eslint_d',
         'markdownlint',
-        'rustywind',
         'beautysh',
         'jsonlint',
         'isort',
