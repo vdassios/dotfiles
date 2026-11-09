@@ -25,34 +25,13 @@ require('lazy').setup({
 
   require 'plugins.lualine',
   require 'plugins.gitsigns',
-
-  -- require 'plugins.which-key',
-  --
   require 'plugins.fzf-lua',
-  --
   require 'plugins.oil',
-  --
   require 'plugins.lspconfig',
-  --
   require 'plugins.conform',
-  --
   require 'plugins.blink-cmp',
-  --
-  -- require 'plugins.tokyonight',
   require 'plugins.catppuccin',
-  -- require 'plugins.kanagawa',
-  --
-  -- require 'plugins.todo-comments',
-  --
-  -- require 'plugins.mini',
-  --
-  {
-    'nvim-treesitter/nvim-treesitter',
-    lazy = false,
-    build = ':TSUpdate',
-  },
-
-  -- require 'plugins.debug',
+  require 'plugins.treesitter',
   require 'plugins.lint',
   require 'plugins.autopairs',
 }, {

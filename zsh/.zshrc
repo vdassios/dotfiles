@@ -76,6 +76,17 @@ export GPG_TTY=$TTY
 
 export EDITOR='nvim' 
 
+# history setup
+HISTFILE=$HOME/.zhistory
+SAVEHIST=1000
+HISTSIZE=999
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+
+# ---- Zoxide (better cd) ----
+eval "$(zoxide init zsh)"
 
 # Source additional local files if they exist.
 z4h source ~/.env.zsh
@@ -136,3 +147,6 @@ if [[ -d $FNM_PATH ]]; then
   path=($FNM_PATH $path)
   eval "$(fnm env --use-on-cd --shell zsh)"
 fi
+
+# opencode
+export PATH="$HOME/.opencode/bin:$PATH"

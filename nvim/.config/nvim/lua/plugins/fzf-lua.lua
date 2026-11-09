@@ -5,12 +5,15 @@ return {
     dependencies = {
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
-    config = function()
+    opts = {
+      file_ignore_patterns = {
+        'node_modules/',
+      },
+    },
+    config = function(_, opts)
       local fzf = require 'fzf-lua'
-      fzf.setup {}
+      fzf.setup(opts)
       fzf.register_ui_select()
-
-      vim.keymap.set('n', '<leader>sk', fzf.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', ';t', fzf.help_tags, { desc = 'Lists available help tags and opens a new window with the relevant help info on <cr>' })
       vim.keymap.set('n', ';f', fzf.files, { desc = 'Lists files in your current working directory, respects .gitignore' })
       vim.keymap.set('n', ';r', function()
@@ -20,14 +23,15 @@ return {
       vim.keymap.set('n', ';q', fzf.quickfix, { desc = 'Lists items in the quickfix list' })
       vim.keymap.set('n', ';s', fzf.treesitter, { desc = 'Lists Function names, variables, from Treesitter' })
       vim.keymap.set('n', ';;', fzf.resume, { desc = 'Resume the previous fzf-lua picker' })
-      vim.keymap.set('n', '<leader><leader>', fzf.buffers, { desc = '[ ] Find existing buffers' })
-      vim.keymap.set('n', '<leader>ss', fzf.builtin, { desc = '[S]earch [S]elect fzf-lua' })
-      vim.keymap.set('n', '<leader>sw', fzf.grep_cword, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>s.', fzf.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader>/', fzf.lgrep_curbuf, { desc = '[/] Fuzzily search in current buffer' })
-      vim.keymap.set('n', '<leader>sn', function()
+      vim.keymap.set('n', ';k', fzf.keymaps, { desc = 'Search keymaps' })
+      vim.keymap.set('n', ';b', fzf.buffers, { desc = 'Find existing buffers' })
+      vim.keymap.set('n', ';p', fzf.builtin, { desc = 'Select fzf-lua picker' })
+      vim.keymap.set('n', ';w', fzf.grep_cword, { desc = 'Search current word' })
+      vim.keymap.set('n', ';.', fzf.oldfiles, { desc = 'Search recent files' })
+      vim.keymap.set('n', ';/', fzf.lgrep_curbuf, { desc = 'Fuzzily search in current buffer' })
+      vim.keymap.set('n', ';n', function()
         fzf.files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = '[S]earch [N]eovim files' })
+      end, { desc = 'Search Neovim files' })
     end,
   },
 }

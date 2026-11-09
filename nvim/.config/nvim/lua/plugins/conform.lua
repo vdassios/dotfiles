@@ -10,16 +10,16 @@ return {
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,
         mode = '',
-        desc = '[F]ormat buffer',
+        desc = 'Format buffer',
       },
     },
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        -- Skip format-on-save entirely for these filetypes. c/cpp have no well
+        -- standardized coding style; vue is opted out on purpose (see the
+        -- commented-out vue formatter below).
+        local disable_filetypes = { c = true, cpp = true, vue = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -39,16 +39,19 @@ return {
         typescript = { 'prettierd', 'prettier', stop_after_first = true },
         javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        -- vue = { 'prettierd', 'prettier', stop_after_first = true },
         json = { 'prettierd', 'prettier', stop_after_first = true },
         jsonc = { 'prettierd', 'prettier', stop_after_first = true },
         html = { 'prettierd', 'prettier', stop_after_first = true },
-        astro = { 'prettierd' },
+        astro = { 'prettierd', 'prettier', stop_after_first = true },
+        svelte = { 'prettierd', 'prettier', stop_after_first = true },
         dockerfile = { 'dockerfmt' },
-        css = { 'rustywind', 'prettierd', 'prettier' },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
         toml = { 'tombi' },
         http = { 'injected' },
         markdown = { 'injected', 'markdownlint' },
         hyprlang = { 'beautysh' },
+        yaml = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },

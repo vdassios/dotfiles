@@ -10,12 +10,10 @@ return {
         typescript = { 'eslint_d' },
         javascriptreact = { 'eslint_d' },
         typescriptreact = { 'eslint_d' },
-        css = { 'eslint_d' },
+        vue = { 'eslint_d' },
         markdown = { 'markdownlint' },
         json = { 'jsonlint' },
         dockerfile = { 'hadolint' },
-        rst = { 'vale' },
-        text = { 'vale' },
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
@@ -64,16 +62,6 @@ return {
           end
         end,
       })
-
-      -- TODO
-      -- Include the running linters in the status line
-      local lint_progress = function()
-        local linters = require('lint').get_running()
-        if #linters == 0 then
-          return '󰦕'
-        end
-        return '󱉶 ' .. table.concat(linters, ', ')
-      end
     end,
   },
 }
