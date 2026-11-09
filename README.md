@@ -20,7 +20,8 @@ The repository is organized as GNU Stow-style packages — each top-level direct
 - **[Hyprsunset](https://github.com/hyprwm/hyprsunset)** — blue-light / color-temperature manager, run via its packaged user unit (`systemctl --user enable --now hyprsunset.service`).
 - **[hyprshutdown](https://github.com/hyprwm/hyprshutdown)** — graceful shutdown: asks apps to close, exits Hyprland, then powers off. Bound to `SUPER+SHIFT+E`.
 - **[Hyprshot](https://github.com/Gustash/Hyprshot)** — screenshot utility (window / output / region) bound under `PRINT`.
-- **[xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland)** — XDG portal used for screen sharing and file pickers.
+- **[xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland)** — XDG portal used for screen sharing.
+- **[xdg-desktop-portal-termfilechooser](https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser)** (AUR) — routes "Open file" / "Save as" dialogs (Chromium, Firefox, GTK apps) to yazi in a floating Alacritty window. Configured in the `portals` package; `GTK_USE_PORTAL=1` in `envs.lua` opts Firefox/GTK3 in.
 - **[Waybar](https://github.com/Alexays/Waybar)** — top status bar; shows workspaces, clock, keyboard layout, bluetooth, network, audio, CPU, battery.
 - **[Walker](https://github.com/abenz1267/walker)** — Wayland application launcher (apps, web search, calc, symbols, clipboard, files). Themed with `macchiatto`.
 - **[Elephant](https://github.com/abenz1267/elephant)** — data provider backend for Walker, run as a user systemd service.
@@ -100,7 +101,7 @@ Configured LSP servers: `lua_ls`, `ts_ls`, `cssls`, `tailwindcss`, `html`, `yaml
 
 Bound in Hyprland or called from scripts:
 
-- **[yazi](https://github.com/sxyzxun/yazi)** — blazing-fast terminal file manager, bound to `SUPER+F` and wrapped by a `y` shell function that CDs to its last directory.
+- **[yazi](https://github.com/sxyzxun/yazi)** — blazing-fast terminal file manager, bound to `SUPER+F` and wrapped by a `y` shell function that CDs to its last directory. Also the XDG default for folders (`applications/…/yazi-open.desktop`) and the system file picker. Themed with the Catppuccin Macchiato flavor (pinned in `package.toml`; restore with `ya pkg install`).
 - **[btop](https://github.com/aristocratos/btop)** — resource monitor, bound to `SUPER+T`.
 - **[lazydocker](https://github.com/jesseduffield/lazydocker)** — TUI for Docker, bound to `SUPER+D`.
 - **[pamixer](https://github.com/cdemoulins/pamixer)** — PulseAudio volume CLI used by the Waybar audio module.
@@ -115,4 +116,6 @@ Bound in Hyprland or called from scripts:
 - `systemd/.config/systemd/user/` — user units:
   - `battery-monitor.service` / `.timer` — periodic low-battery notifier.
   - `elephant.service` — keeps the Elephant data provider running for Walker.
+- `applications/.local/share/applications/` — custom desktop entries (`yazi-open.desktop`, the `inode/directory` handler set by `scripts/first-run/mimetypes.sh`).
+- `portals/.config/` — `xdg-desktop-portal/hyprland-portals.conf` (sends FileChooser to termfilechooser) and `xdg-desktop-portal-termfilechooser/config` (yazi wrapper + terminal). Installed by `scripts/first-run/file-chooser.sh`.
 - `themes/` — extra app themes (currently a qBittorrent Iceberg theme).
