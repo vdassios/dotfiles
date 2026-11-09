@@ -25,28 +25,13 @@ require('lazy').setup({
 
   require 'plugins.lualine',
   require 'plugins.gitsigns',
-
-  -- require 'plugins.which-key',
-  --
   require 'plugins.fzf-lua',
-  --
   require 'plugins.oil',
-  --
   require 'plugins.lspconfig',
-  --
   require 'plugins.conform',
-  --
   require 'plugins.blink-cmp',
-  --
   require 'plugins.catppuccin',
-  --
-  -- require 'plugins.todo-comments',
-  --
-  -- require 'plugins.mini',
-  --
   require 'plugins.treesitter',
-
-  -- require 'plugins.debug',
   require 'plugins.lint',
   require 'plugins.autopairs',
 }, {
