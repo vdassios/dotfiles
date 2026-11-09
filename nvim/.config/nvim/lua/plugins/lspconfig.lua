@@ -335,6 +335,9 @@ return {
         'rustywind',
         'beautysh',
         'jsonlint',
+        'isort',
+        'black',
+        'dockerfmt',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
