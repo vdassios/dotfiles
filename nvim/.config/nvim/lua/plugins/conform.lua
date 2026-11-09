@@ -19,7 +19,7 @@ return {
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, vue = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -39,6 +39,7 @@ return {
         typescript = { 'prettierd', 'prettier', stop_after_first = true },
         javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        -- vue = { 'prettierd', 'prettier', stop_after_first = true },
         json = { 'prettierd', 'prettier', stop_after_first = true },
         jsonc = { 'prettierd', 'prettier', stop_after_first = true },
         html = { 'prettierd', 'prettier', stop_after_first = true },
@@ -49,6 +50,7 @@ return {
         http = { 'injected' },
         markdown = { 'injected', 'markdownlint' },
         hyprlang = { 'beautysh' },
+        yaml = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
