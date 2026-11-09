@@ -43,7 +43,7 @@ return {
         json = { 'prettierd', 'prettier', stop_after_first = true },
         jsonc = { 'prettierd', 'prettier', stop_after_first = true },
         html = { 'prettierd', 'prettier', stop_after_first = true },
-        astro = { 'prettierd' },
+        astro = { 'prettierd', 'prettier', stop_after_first = true },
         dockerfile = { 'dockerfmt' },
         css = { 'rustywind', 'prettierd', 'prettier' },
         toml = { 'tombi' },
