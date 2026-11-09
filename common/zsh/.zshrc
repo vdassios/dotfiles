@@ -42,10 +42,6 @@ zstyle ':z4h:ssh:*' enable 'no'
 # enabled hosts.
 zstyle ':z4h:ssh:*' send-extra-files '~/.nanorc' '~/.env.zsh'
 
-# Clone Oh My Zsh (kept up to date by `z4h update`); only the emoji-clock
-# plugin is loaded from it, after `z4h init` below.
-z4h install ohmyzsh/ohmyzsh || return
-
 # Install or update core components (fzf, zsh-autosuggestions, etc.) and
 # initialize Zsh. After this point console I/O is unavailable until Zsh
 # is fully initialized. Everything that requires user interaction or can
@@ -86,9 +82,6 @@ eval "$(zoxide init zsh)"
 
 # Source additional local files if they exist.
 z4h source ~/.env.zsh
-
-# Oh My Zsh plugins (cloned by `z4h install` above).
-z4h load ohmyzsh/ohmyzsh/plugins/emoji-clock
 
 # Define key bindings.
 z4h bindkey z4h-backward-kill-word  Ctrl+Backspace     Ctrl+H
