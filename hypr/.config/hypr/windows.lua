@@ -25,6 +25,10 @@ hl.window_rule({
 -- App-specific tweaks
 
 -- System
+-- yazi file picker spawned by xdg-desktop-portal-termfilechooser
+-- (app-id set in portals/.config/xdg-desktop-portal-termfilechooser/config)
+hl.window_rule({ match = { class = "^yazi-filechooser$" }, tag = "+floating-window" })
+
 -- Floating windows
 hl.window_rule({
     match  = { tag = "floating-window" },

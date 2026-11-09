@@ -25,6 +25,10 @@ hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 
+-- Route GTK3 apps' and Firefox's file pickers through the portal, which hands
+-- them to yazi (see portals/ Stow package). Chromium uses the portal on its own.
+hl.env("GTK_USE_PORTAL", "1")
+
 -- Set hyprshot save directory
 hl.env("HYPRSHOT_DIR", home .. "/Pictures/Screenshots")
 

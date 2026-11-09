@@ -1,0 +1,12 @@
+; xdg-desktop-portal-termfilechooser (AUR: xdg-desktop-portal-termfilechooser)
+; The wrapper ships in /usr/share/xdg-desktop-portal-termfilechooser/.
+; It must block until yazi exits, so this uses xdg-terminal-exec directly
+; rather than launch-tui (which detaches via setsid/uwsm-app).
+; The app-id lets hypr/windows.lua float the picker.
+[filechooser]
+cmd=yazi-wrapper.sh
+default_dir=$HOME
+env=TERMCMD=xdg-terminal-exec --app-id=yazi-filechooser -e
+create_help_file=1
+open_mode=suggested
+save_mode=last
