@@ -1,0 +1,43 @@
+-- Control your input devices
+-- See https://wiki.hypr.land/configuring/core/config-options/ (input section)
+hl.config({
+    input = {
+        -- Use multiple keyboard layouts and switch between them with Scroll Lock (Fn + S, for Dell, Fn + K for Framework)
+        kb_layout = "us,gr",
+        -- compose:menu - change compose key from default (caps)
+        -- caps:escape - make caps lock an additional escape
+        -- altwin:swap_alt_win - alt and altgr is now SUPER keys, windows key is now alt
+        kb_options = "compose:menu,caps:escape,altwin:swap_alt_win,grp:sclk_toggle",
+
+        -- Change speed of keyboard repeat
+        repeat_rate = 40,
+        repeat_delay = 600,
+
+        -- Start with numlock on by default
+        numlock_by_default = true,
+
+        -- Increase sensitity for mouse/trackpack (default: 0)
+        -- sensitivity = 0.35,
+
+        touchpad = {
+            -- Use natural (inverse) scrolling
+            -- natural_scroll = true,
+
+            -- Use two-finger clicks for right-click instead of lower-right corner
+            -- clickfinger_behavior = true,
+
+            -- Control the speed of your scrolling
+            scroll_factor = 0.4,
+        },
+    },
+})
+
+-- Scroll nicely in the terminal
+hl.window_rule({
+    match = { class = "(Alacritty|kitty)" },
+    scroll_touchpad = 1.5,
+})
+
+-- Enable touchpad gestures for changing workspaces
+-- See https://wiki.hypr.land/configuring/core/binds/gestures/
+-- hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
