@@ -130,11 +130,9 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-# fnm
-FNM_PATH="/home/vdassios/.local/share/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="$FNM_PATH:$PATH"
-  eval "`fnm env`"
+# fnm (installed to ~/.local/share/fnm, not on PATH by default)
+FNM_PATH="$HOME/.local/share/fnm"
+if [[ -d $FNM_PATH ]]; then
+  path=($FNM_PATH $path)
+  eval "$(fnm env --use-on-cd --shell zsh)"
 fi
-
-eval "$(fnm env --use-on-cd --shell zsh)"
