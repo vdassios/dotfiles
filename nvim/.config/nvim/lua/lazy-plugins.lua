@@ -38,9 +38,7 @@ require('lazy').setup({
   --
   require 'plugins.blink-cmp',
   --
-  -- require 'plugins.tokyonight',
   require 'plugins.catppuccin',
-  -- require 'plugins.kanagawa',
   --
   -- require 'plugins.todo-comments',
   --
