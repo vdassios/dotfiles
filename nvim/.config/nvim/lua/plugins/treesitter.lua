@@ -32,7 +32,14 @@ return {
         'javascript',
         'jsdoc',
         'typescript',
+        'tsx',
+        'vue',
         'scss',
+        'json',
+        'yaml',
+        'toml',
+        'dockerfile',
+        'python',
       }
 
       local installed = ts.get_installed 'parsers'
