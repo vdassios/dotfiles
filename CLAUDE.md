@@ -8,7 +8,7 @@ The dotfiles serve two machines: an Arch Linux desktop and a macOS MacBook Air. 
 
 - `common/` — packages for both OSes (alacritty, nvim, p10k, themes, tmux, yazi, zsh).
 - `linux/` — Arch-only packages (hypr, waybar, walker, mako, greetd, portals, systemd, applications) and `dotfiles-os`.
-- `macos/` — macOS-only packages and `dotfiles-os`.
+- `macos/` — macOS-only packages (aerospace, sketchybar) and `dotfiles-os`.
 
 Each package's internal layout mirrors `$HOME`. For example, `linux/hypr/.config/hypr/hyprland.lua` ends up at `~/.config/hypr/hyprland.lua`. `./stow-dotfiles.sh` restows every package in `common/` plus the current OS's folder. "Deploying" a change means re-running it. There is no Makefile or test suite.
 
@@ -33,6 +33,7 @@ Configs here are not self-contained — several form chains where a change in on
 - **Waybar ↔ scripts** — Waybar modules shell out to scripts in `~/.local/bin/` (e.g. `launch-audio.sh`, `launch-bluetooth.sh`, `launch-wifi.sh`, `powerprofiles-list.sh`). Check `linux/waybar/.config/waybar/config.jsonc` for the exact `on-click` commands before renaming scripts.
 - **File manager / file picker (yazi)** — folders open via `linux/applications/.local/share/applications/yazi-open.desktop` (→ `launch-tui yazi`), made the `inode/directory` default in `scripts/first-run/mimetypes.sh`. "Open/Save as" dialogs go through `linux/portals/` (portal routing + termfilechooser config), which launches the terminal with app-id `yazi-filechooser`; `linux/hypr/.config/hypr/windows.lua` floats that app-id. Keep the app-id in sync between the two.
 - **Boot chain (systemd-boot → signed UKI → TPM2 LUKS unlock → greetd)** — set up by `scripts/first-run/{uki,secure-boot,tpm-unlock,greetd}.sh` in that order (see `scripts/first-run/README.md`). The kernel cmdline lives in `/etc/kernel/cmdline` and is baked into `/boot/EFI/Linux/arch-linux.efi`; changing it needs `mkinitcpio -P` + `sbctl verify`. The TPM is bound to PCR 7 only. Never sign `/boot/vmlinuz-linux` or add type #1 loader entries — that bypasses the TPM unlock. greetd's config is copied to `/etc/greetd/` (not stowed) because the `greeter` user can't read `$HOME`; edit `linux/greetd/.config/greetd/` and re-run `greetd.sh`.
+- **AeroSpace ↔ SketchyBar** — AeroSpace launches SketchyBar (`after-startup-command`) and fires the custom `aerospace_workspace_change` event with `FOCUSED_WORKSPACE` on every workspace switch (`exec-on-workspace-change`). `sketchybarrc` registers that event and builds one `space.<id>` item per `aerospace list-workspaces --all`; `plugins/aerospace.sh` highlights the focused one. Keep the event name and variable in sync between `macos/aerospace/.config/aerospace/aerospace.toml` and `macos/sketchybar/.config/sketchybar/`.
 - **Battery monitor** — `battery-monitor.service` + `.timer` (systemd user units) drive `scripts/battery-monitor.sh`. All three must stay in sync.
 - **Neovim (kickstart-based)** — `init.lua` is minimal; it requires `options`, `keymaps`, `lazy-bootstrap`, then `lazy-plugins`. Actual plugin specs live in `common/nvim/.config/nvim/lua/plugins/*.lua` and are auto-discovered by lazy.nvim. Add a new plugin by dropping a new file in that directory; do not edit `lazy-plugins.lua` to register it. The pinned versions live in `lazy-lock.json` — commit lockfile changes alongside plugin changes.
 

@@ -8,7 +8,7 @@ The repository is organized as GNU Stow packages, grouped by the OS they apply t
 
 - `common/` — packages used on both machines (alacritty, nvim, p10k, themes, tmux, yazi, zsh).
 - `linux/` — Arch-only packages (Hyprland, Waybar, Walker, mako, greetd, portals, systemd units, desktop entries).
-- `macos/` — macOS-only packages.
+- `macos/` — macOS-only packages (AeroSpace, SketchyBar).
 - `scripts/` — not a Stow package; see [Scripts & systemd units](#scripts--systemd-units).
 
 `./stow-dotfiles.sh` stows every package in `common/` plus every package in the folder for the current OS. It is safe to re-run after pulling.
@@ -54,6 +54,11 @@ The fragments live in a separate directory rather than next to the shared config
 - **[wl-clipboard](https://github.com/bugaevc/wl-clipboard) + [cliphist](https://github.com/sentriz/cliphist)** — clipboard history: `wl-paste --watch cliphist store` runs from `autostart.lua`; `SUPER+V` browses history through Walker's dmenu mode.
 - **[playerctl](https://github.com/altdesktop/playerctl)** — MPRIS media-key controller for XF86Audio keys.
 - **[brightnessctl](https://github.com/Hummer12007/brightnessctl)** — backlight brightness control used on resume from DPMS off.
+
+On macOS:
+
+- **[AeroSpace](https://github.com/nikitabobko/AeroSpace)** — i3-like tiling window manager. Starts at login, launches SketchyBar, and binds `cmd` + `hjkl` / `1`–`9` for focus, move and workspaces.
+- **[SketchyBar](https://github.com/FelixKratz/SketchyBar)** — top status bar; shows AeroSpace workspaces, the front app, clock, volume and battery. Item scripts live in `plugins/`.
 
 ## Shell & terminal
 
