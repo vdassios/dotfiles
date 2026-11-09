@@ -1,7 +1,7 @@
 # Global instructions
 
 ## This file
-- Lives in `~/dotfiles/claude/.claude/` (symlinked to `~/.claude/`). `~/dotfiles` is a public GitHub repo: keep work material (Pricefox, client data, internal hosts, credentials) out of it.
+- Lives in `~/dotfiles/common/claude/.claude/` (symlinked to `~/.claude/`). `~/dotfiles` is a public GitHub repo: keep work material (Pricefox, client data, internal hosts, credentials) out of it.
 - When a correction applies beyond the current project, record it here rather than in a project memory.
 
 ## Scope
