@@ -79,7 +79,8 @@
     "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
     "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
     "interval": 5,
-    "on-click": "power",
+    // Pick a power profile (powerprofiles-list feeds Walker's dmenu mode)
+    "on-click": "p=$(powerprofiles-list | launch-walker --dmenu) && [ -n \"$p\" ] && powerprofilesctl set \"$p\"",
     "states": {
       "warning": 20,
       "critical": 10,
