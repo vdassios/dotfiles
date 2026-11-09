@@ -12,7 +12,8 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 # If you are looking for other colors, see the color picker:
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 
-sketchybar --bar position=top height=40 blur_radius=30 color=0x40000000
+# Catppuccin Macchiato, matching Waybar on Arch: base bar, text labels, blue focused workspace.
+sketchybar --bar position=top height=40 color=0xff24273a
 
 ##### Changing Defaults #####
 # We now change some default values, which are applied to all further items.
@@ -24,8 +25,8 @@ default=(
   padding_right=5
   icon.font="Hack Nerd Font:Bold:17.0"
   label.font="Hack Nerd Font:Bold:14.0"
-  icon.color=0xffffffff
-  label.color=0xffffffff
+  icon.color=0xffcad3f5
+  label.color=0xffcad3f5
   icon.padding_left=4
   icon.padding_right=4
   label.padding_left=4
@@ -44,7 +45,7 @@ for sid in $(aerospace list-workspaces --all); do
     sketchybar --add item space.$sid left \
         --subscribe space.$sid aerospace_workspace_change \
         --set space.$sid \
-        background.color=0x44ffffff \
+        background.color=0xcc8aadf4 \
         background.corner_radius=5 \
         background.height=20 \
         background.drawing=off \
