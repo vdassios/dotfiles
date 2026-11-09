@@ -70,7 +70,9 @@ inner.horizontal = 5
 inner.vertical = 5
 outer.left = 5
 outer.bottom = 5
-outer.top = 5
+# The macOS menu bar auto-hides, so SketchyBar (height=40 in sketchybarrc) is the only
+# top bar: leave its height plus the usual 5px gap so windows don't slide under it.
+outer.top = 45
 outer.right = 5
 
 # 'main' binding mode declaration

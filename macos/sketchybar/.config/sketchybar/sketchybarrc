@@ -11,6 +11,7 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 
 # Catppuccin Macchiato, matching Waybar on Arch: base bar, text labels, blue focused workspace.
+# AeroSpace's gaps.outer.top reserves height + 5; change both together.
 sketchybar --bar position=top height=40 color=0xff24273a
 
 ##### Changing Defaults #####
