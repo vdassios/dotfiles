@@ -67,10 +67,6 @@ path=(~/bin $path)
 # add ~/.local/bin
 export PATH="$HOME/.local/bin:$PATH"
 
-# add Java to path
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-export PATH=$JAVA_HOME/bin:$PATH
-
 # Export environment variables.
 export GPG_TTY=$TTY
 
@@ -150,3 +146,7 @@ fi
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
+
+# OS-specific settings (JAVA_HOME, SDKMAN, ...) from the dotfiles-os package
+# for this OS. Keep this last: SDKMAN's init must run at the end of the file.
+z4h source ~/.config/dotfiles-os/zshrc.zsh

@@ -1,3 +1,8 @@
+# OS-specific settings (font family and size) come from the dotfiles-os
+# package for this OS. Imports load before this file, so don't set [font] here.
+[general]
+import = ["~/.config/dotfiles-os/alacritty.toml"]
+
 # catpuccin theme
 [colors.primary]
 background = "#24273a"
@@ -67,12 +72,6 @@ color = "#f4dbd6"
 
 [env]
 TERM = "xterm-256color"
-
-[font]
-normal = { family = "MesloLGS Nerd Font" }
-bold = { family = "MesloLGS Nerd Font" }
-italic = { family = "MesloLGS Nerd Font" }
-size = 9
 
 [window]
 padding.x = 14

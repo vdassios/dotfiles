@@ -1,8 +1,26 @@
 # dotfiles
 
-Personal Arch Linux configuration. This started as a customization layer on top of DHH's [omarchy](https://learn.omacom.io/2/the-omarchy-manual) and is being pared down toward a barebones Arch setup.
+Personal configuration for two machines: an Arch Linux desktop and a macOS MacBook Air. The Arch side started as a customization layer on top of DHH's [omarchy](https://learn.omacom.io/2/the-omarchy-manual) and is being pared down toward a barebones Arch setup.
 
-The repository is organized as GNU Stow-style packages — each top-level directory mirrors the layout under `$HOME` (e.g. `hypr/.config/hypr/...`) so the configs can be symlinked straight into place.
+## Layout
+
+The repository is organized as GNU Stow packages, grouped by the OS they apply to. Each package mirrors the layout under `$HOME` (e.g. `linux/hypr/.config/hypr/...`) so the configs can be symlinked straight into place.
+
+- `common/` — packages used on both machines (alacritty, nvim, p10k, themes, tmux, yazi, zsh).
+- `linux/` — Arch-only packages (Hyprland, Waybar, Walker, mako, greetd, portals, systemd units, desktop entries).
+- `macos/` — macOS-only packages.
+- `scripts/` — not a Stow package; see [Scripts & systemd units](#scripts--systemd-units).
+
+`./stow-dotfiles.sh` stows every package in `common/` plus every package in the folder for the current OS. It is safe to re-run after pulling.
+
+**Per-OS values in shared configs.** When a common config needs a value that differs per OS, it includes a file from `~/.config/dotfiles-os/`. Each OS folder has a `dotfiles-os` package that provides that directory, so whichever package is stowed decides the value:
+
+- `common/alacritty` imports `~/.config/dotfiles-os/alacritty.toml` (font family and size).
+- `common/zsh/.zshrc` sources `~/.config/dotfiles-os/zshrc.zsh` at the end (`JAVA_HOME`; SDKMAN on macOS).
+
+The fragments live in a separate directory rather than next to the shared config because Stow can't merge one target directory from packages in two different stow directories (`common/` and `linux/`).
+
+**Adding a new tool:** move its config into a package (`mv ~/.config/foo common/foo/.config/`, or under `linux/` or `macos/` if it's OS-only), run `./stow-dotfiles.sh`, then commit.
 
 ## Contents
 
@@ -28,7 +46,7 @@ The repository is organized as GNU Stow-style packages — each top-level direct
 - **[Mako](https://github.com/emersion/mako)** — lightweight Wayland notification daemon.
 - **[swaybg](https://github.com/swaywm/swaybg)** — Wayland wallpaper setter (loads `~/Wallpapers/cats.png`).
 - **[SwayOSD](https://github.com/ErikReider/SwayOSD)** — GTK on-screen display for volume / brightness / caps-lock.
-- **[greetd](https://sr.ht/~kennylevinsen/greetd/) + [tuigreet](https://github.com/apognu/tuigreet)** — login manager on VT1; the only password prompt at boot (the LUKS root is unlocked by TPM2). `greetd/.config/greetd/` holds `config.toml` and the `banner.txt` greeting; `scripts/first-run/greetd.sh` copies them into `/etc/greetd/`.
+- **[greetd](https://sr.ht/~kennylevinsen/greetd/) + [tuigreet](https://github.com/apognu/tuigreet)** — login manager on VT1; the only password prompt at boot (the LUKS root is unlocked by TPM2). `linux/greetd/.config/greetd/` holds `config.toml` and the `banner.txt` greeting; `scripts/first-run/greetd.sh` copies them into `/etc/greetd/`.
 - **[uwsm](https://github.com/Vladimir-csp/uwsm)** — Universal Wayland Session Manager, used to launch apps under systemd user scopes.
 - **[polkit-gnome](https://gitlab.gnome.org/Archive/policykit-gnome)** — PolicyKit authentication agent for privileged GUI prompts.
 - **[fcitx5](https://fcitx-im.org/)** — input method framework (multilingual typing).
@@ -39,12 +57,13 @@ The repository is organized as GNU Stow-style packages — each top-level direct
 
 ## Shell & terminal
 
-- **[Alacritty](https://alacritty.org/)** — GPU-accelerated terminal emulator. Uses MesloLGS Nerd Font and a Catppuccin Macchiato palette.
+- **[Alacritty](https://alacritty.org/)** — GPU-accelerated terminal emulator. Uses MesloLGS Nerd Font (size and family name set per OS in `dotfiles-os`) and a Catppuccin Macchiato palette.
 - **[Zsh](https://www.zsh.org/)** — login shell.
 - **[zsh4humans (z4h)](https://github.com/romkatv/zsh4humans)** — Zsh distribution managing fzf, autosuggestions, syntax-highlighting, and SSH teleportation.
 - **[Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh)** — pulled in via `z4h install`; only the `emoji-clock` plugin is loaded.
-- **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Zsh prompt, configured via `p10k/.p10k.zsh`.
-- **[zsh-z](https://github.com/agkozak/zsh-z)** — frecency-based `z` directory jumper (vendored as `zsh/zsh-z.plugin.zsh`).
+- **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Zsh prompt, configured via `common/p10k/.p10k.zsh`.
+- **[zsh-z](https://github.com/agkozak/zsh-z)** — frecency-based `z` directory jumper (vendored as `common/zsh/zsh-z.plugin.zsh`).
+- **[zoxide](https://github.com/ajeetdsouza/zoxide)** — smarter `cd` (`zoxide init zsh`).
 - **[fnm](https://github.com/Schniz/fnm)** — fast Node.js version manager, with `--use-on-cd`.
 - **[direnv](https://direnv.net/)** — per-directory environment variables via `.envrc`, enabled through z4h.
 - **[fzf](https://github.com/junegunn/fzf)** — fuzzy finder; color palette overridden to match Catppuccin Macchiato.
@@ -65,7 +84,6 @@ The repository is organized as GNU Stow-style packages — each top-level direct
 ### UI & colorscheme
 
 - **[catppuccin/nvim](https://github.com/catppuccin/nvim)** — active colorscheme (`catppuccin-macchiato`).
-- **[tokyonight.nvim](https://github.com/folke/tokyonight.nvim)** — alternative colorscheme (installed, currently commented out).
 - **[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)** — statusline with minimal separators.
 
 ### Navigation & search
@@ -101,7 +119,7 @@ Configured LSP servers: `lua_ls`, `ts_ls`, `cssls`, `tailwindcss`, `html`, `yaml
 
 Bound in Hyprland or called from scripts:
 
-- **[yazi](https://github.com/sxyzxun/yazi)** — blazing-fast terminal file manager, bound to `SUPER+F` and wrapped by a `y` shell function that CDs to its last directory. Also the XDG default for folders (`applications/…/yazi-open.desktop`) and the system file picker. Themed with the Catppuccin Macchiato flavor (pinned in `package.toml`; restore with `ya pkg install`).
+- **[yazi](https://github.com/sxyzxun/yazi)** — blazing-fast terminal file manager, bound to `SUPER+F` and wrapped by a `y` shell function that CDs to its last directory. Also the XDG default for folders (`linux/applications/…/yazi-open.desktop`) and the system file picker. Themed with the Catppuccin Macchiato flavor (pinned in `package.toml`; restore with `ya pkg install`).
 - **[btop](https://github.com/aristocratos/btop)** — resource monitor, bound to `SUPER+T`.
 - **[lazydocker](https://github.com/jesseduffield/lazydocker)** — TUI for Docker, bound to `SUPER+D`.
 - **[pamixer](https://github.com/cdemoulins/pamixer)** — PulseAudio volume CLI used by the Waybar audio module.
@@ -113,10 +131,10 @@ Bound in Hyprland or called from scripts:
 ## Scripts & systemd units
 
 - `scripts/` — helper shell scripts (launchers, battery monitor, screen lock, timezone picker, terminal CWD reporter). The `scripts/README.md` describes copying them into `~/.local/bin/`.
-- `systemd/.config/systemd/user/` — user units:
+- `linux/systemd/.config/systemd/user/` — user units:
   - `battery-monitor.service` / `.timer` — periodic low-battery notifier.
   - `elephant.service` — keeps the Elephant data provider running for Walker.
-- `applications/.local/share/applications/` — custom desktop entries (`yazi-open.desktop`, the `inode/directory` handler set by `scripts/first-run/mimetypes.sh`).
-- `portals/.config/` — `xdg-desktop-portal/hyprland-portals.conf` (sends FileChooser to termfilechooser) and `xdg-desktop-portal-termfilechooser/config` (yazi wrapper + terminal). Installed by `scripts/first-run/file-chooser.sh`.
+- `linux/applications/.local/share/applications/` — custom desktop entries (`yazi-open.desktop`, the `inode/directory` handler set by `scripts/first-run/mimetypes.sh`).
+- `linux/portals/.config/` — `xdg-desktop-portal/hyprland-portals.conf` (sends FileChooser to termfilechooser) and `xdg-desktop-portal-termfilechooser/config` (yazi wrapper + terminal). Installed by `scripts/first-run/file-chooser.sh`.
 - `scripts/first-run/` — one-time system setup. The boot chain (`network-online.sh`, `uki.sh`, `secure-boot.sh`, `tpm-unlock.sh`, `greetd.sh`) sets up a signed [systemd-boot](https://wiki.archlinux.org/title/Systemd-boot) + [UKI](https://wiki.archlinux.org/title/Unified_kernel_image), [sbctl](https://github.com/Foxboron/sbctl) Secure Boot keys and a TPM2-unlocked LUKS root ([systemd-cryptenroll](https://wiki.archlinux.org/title/Systemd-cryptenroll)), so the greetd login is the only password at boot; order and reboots are in `scripts/first-run/README.md`.
-- `themes/` — extra app themes (currently a qBittorrent Iceberg theme).
+- `common/themes/` — extra app themes (currently a qBittorrent Iceberg theme).

@@ -1,0 +1,6 @@
+# Linux-only alacritty settings, imported by common/alacritty.
+[font]
+normal = { family = "MesloLGS Nerd Font" }
+bold = { family = "MesloLGS Nerd Font" }
+italic = { family = "MesloLGS Nerd Font" }
+size = 9

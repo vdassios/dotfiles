@@ -1,0 +1,6 @@
+# macOS-only alacritty settings, imported by common/alacritty.
+[font]
+normal = { family = "MesloLGS NF" }
+bold = { family = "MesloLGS NF" }
+italic = { family = "MesloLGS NF" }
+size = 15

@@ -5,7 +5,7 @@
 # because greetd runs the greeter as the `greeter` user, which cannot read $HOME.
 set -euo pipefail
 
-src="$(cd "$(dirname "$0")/../../greetd/.config/greetd" && pwd)"
+src="$(cd "$(dirname "$0")/../../linux/greetd/.config/greetd" && pwd)"
 
 sudo pacman -S --needed greetd greetd-tuigreet
 
