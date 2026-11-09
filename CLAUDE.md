@@ -15,13 +15,12 @@ Each package's internal layout mirrors `$HOME`. For example, `linux/hypr/.config
 Rules when adding or changing configs:
 
 - **Pick the folder by OS.** A tool used on both machines goes in `common/`, even if one or two values differ. Put a tool in `linux/` or `macos/` only if it exists on just that OS. Never put macOS-only values (paths, font names, sizes) in a `common/` file or the Arch machine breaks, and vice versa.
-- **Per-OS values go in `dotfiles-os`.** `linux/dotfiles-os` and `macos/dotfiles-os` both provide `~/.config/dotfiles-os/`. Common configs include files from there: `alacritty.toml` is imported by alacritty and must hold `[font]`, because imports load before the main file and the main file would override them. `zshrc.zsh` is sourced at the very end of `.zshrc` (SDKMAN must be last). When a new per-OS value is needed, add it to **both** OS fragments.
+- **Per-OS values go in `dotfiles-os`.** `linux/dotfiles-os` and `macos/dotfiles-os` both provide `~/.config/dotfiles-os/`. Common configs include files from there: `alacritty.toml` is imported by alacritty and must hold `[font]`, because imports load before the main file and the main file would override them. `env.zsh` is sourced at the very top of `.zshrc` (Homebrew's PATH, needed before plugins load) and `zshrc.zsh` at the very end (SDKMAN must be last). When a new per-OS value is needed, add it to **both** OS fragments.
 - **No package in `linux/` or `macos/` may share a target directory with a `common/` package.** Stow can't merge one directory across two stow directories and aborts with "existing target is not owned by stow". That's why the fragments live in `~/.config/dotfiles-os/` and not in e.g. `~/.config/alacritty/`.
 
-Two directories break the Stow pattern and need manual handling:
+One directory breaks the Stow pattern and needs manual handling:
 
 - `scripts/` — **not** a Stow package. Per `scripts/README.md`, these `.sh` files must be copied (or symlinked) into `~/.local/bin/` by hand and made executable. Many Hyprland keybindings and systemd units invoke these by basename, so renaming a script requires updating its consumers (grep `linux/hypr/.config/hypr/bindings.lua` and `linux/systemd/.config/systemd/user/*.service`).
-- `common/zsh/` — ships `.zshrc` at the package root (not under `.config/`), because z4h expects `~/.zshrc`.
 
 ## Cross-file wiring to watch
 

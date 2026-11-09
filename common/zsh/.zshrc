@@ -1,54 +1,65 @@
-# Personal Zsh configuration file. It is strongly recommended to keep all
-# shell customization and configuration (including exported environment
-# variables such as PATH) in this file or in files sourced from it.
-#
-# Documentation: https://github.com/romkatv/zsh4humans/blob/v5/README.md.
+# Zsh configuration shared by both machines. Plugins are plain git clones
+# under ~/.local/share/zsh/plugins, made on first start; update them with
+# `zsh-plugins-update`.
 
-# Periodic auto-update on Zsh startup: 'ask' or 'no'.
-# You can manually run `z4h update` to update everything.
-zstyle ':z4h:' auto-update      'no'
-# Ask whether to auto-update this often; has no effect if auto-update is 'no'.
-zstyle ':z4h:' auto-update-days '28'
+# OS-specific environment that must exist before anything below runs
+# (e.g. Homebrew's PATH on macOS), from the dotfiles-os package.
+[[ -r ~/.config/dotfiles-os/env.zsh ]] && source ~/.config/dotfiles-os/env.zsh
 
-# Keyboard type: 'mac' or 'pc'.
-zstyle ':z4h:bindkey' keyboard  'pc'
+# Keep only the first copy of each PATH entry, so nested shells and the
+# prepends below don't pile up duplicates.
+typeset -U PATH path FPATH fpath
 
-# Start tmux if not already in tmux.
-# zstyle ':z4h:' start-tmux command tmux -u new -A -D -t z4h
+# ---- Plugins ----------------------------------------------------------------
+ZPLUGINS=${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins
+zplugins=(
+  romkatv/powerlevel10k
+  zsh-users/zsh-completions
+  Aloxaf/fzf-tab
+  zsh-users/zsh-autosuggestions
+  zsh-users/zsh-syntax-highlighting
+  zsh-users/zsh-history-substring-search
+)
+# Clone missing plugins before the instant prompt below, which must not be
+# followed by console output.
+() {
+  local repo
+  for repo in $zplugins; do
+    [[ -d $ZPLUGINS/${repo:t} ]] ||
+      git clone --quiet --depth=1 https://github.com/$repo $ZPLUGINS/${repo:t}
+  done
+}
+function zsh-plugins-update() {
+  local repo
+  for repo in $zplugins; do
+    print -P "%B${repo:t}%b"
+    git -C $ZPLUGINS/${repo:t} pull --ff-only --quiet
+  done
+}
 
-# Whether to move prompt to the bottom when zsh starts and on Ctrl+L.
-zstyle ':z4h:' prompt-at-bottom 'no'
+# Powerlevel10k instant prompt: draws the prompt immediately while the rest
+# of this file loads. Anything that reads console input must go above it.
+if [[ -r ${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh ]]; then
+  source ${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh
+fi
 
-# Mark up shell's output with semantic information.
-zstyle ':z4h:' term-shell-integration 'yes'
+source $ZPLUGINS/powerlevel10k/powerlevel10k.zsh-theme
+[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# Right-arrow key accepts one character ('partial-accept') from
-# command autosuggestions or the whole thing ('accept')?
-zstyle ':z4h:autosuggestions' forward-char 'accept'
+# ---- Environment ------------------------------------------------------------
+path=(~/.opencode/bin ~/.local/bin ~/bin $path)
 
-# Recursively traverse directories when TAB-completing files.
-zstyle ':z4h:fzf-complete' recurse-dirs 'no'
+export EDITOR=nvim
+export GPG_TTY=$TTY
+export PAGER=less
+export LESS=-iRFXMx4  # case-insensitive search, colors, quit if one screen
 
-# Enable direnv to automatically source .envrc files.
-zstyle ':z4h:direnv'         enable 'yes'
-# Show "loading" and "unloading" notifications from direnv.
-zstyle ':z4h:direnv:success' notify 'yes'
+# Colors for GNU ls and completion lists (LS_COLORS), BSD ls (LSCOLORS) and
+# tree (TREE_COLORS, without underlines).
+export LS_COLORS='fi=00:mi=00:mh=00:ln=01;36:or=01;31:di=01;34:ow=04;01;34:st=34:tw=04;34:pi=01;33:so=01;33:do=01;33:bd=01;33:cd=01;33:su=01;35:sg=01;35:ca=01;35:ex=01;32'
+export LSCOLORS='ExGxDxDxCxDxDxFxFxexEx'
+export TREE_COLORS=${LS_COLORS//04;}
 
-# Disable automatic teleportation of z4h over SSH. To opt in per host, add
-# e.g. `zstyle ':z4h:ssh:myhost' enable 'yes'` (in ~/.env.zsh for local hosts).
-zstyle ':z4h:ssh:*' enable 'no'
-
-# Send these files over to the remote host when connecting over SSH to the
-# enabled hosts.
-zstyle ':z4h:ssh:*' send-extra-files '~/.nanorc' '~/.env.zsh'
-
-# Install or update core components (fzf, zsh-autosuggestions, etc.) and
-# initialize Zsh. After this point console I/O is unavailable until Zsh
-# is fully initialized. Everything that requires user interaction or can
-# perform network I/O must be done above. Everything else is best done below.
-z4h init || return
-
-# --color=bg+:#363A4F,bg:#24273A,spinner:#F4DBD6,hl:#ED8796 \
 # fzf catppuccin macchiato
 export FZF_DEFAULT_OPTS=" \
 --color=spinner:#F4DBD6,hl:#ED8796 \
@@ -57,79 +68,96 @@ export FZF_DEFAULT_OPTS=" \
 --color=selected-bg:#494D64 \
 --color=border:#6E738D,label:#CAD3F5"
 
-# Keep only the first copy of each PATH entry, so nested shells and the
-# prepends below (and the OS fragment's PATH=...) don't pile up duplicates.
-typeset -U PATH path
+# ---- Options ----------------------------------------------------------------
+setopt auto_cd               # type a directory name to cd into it
+setopt auto_pushd            # cd pushes onto the directory stack (cd -<TAB>)
+setopt extended_glob
+setopt glob_dots             # globs match dotfiles
+setopt interactive_comments
+setopt no_beep
+setopt no_flow_control       # free Ctrl+S / Ctrl+Q
+setopt always_to_end         # move to the end of a word after completing it
 
-# Extend PATH.
-path=(~/bin $path)
-
-# add ~/.local/bin
-export PATH="$HOME/.local/bin:$PATH"
-
-# Export environment variables.
-export GPG_TTY=$TTY
-
-export EDITOR='nvim' 
-
-# history setup
-HISTFILE=$HOME/.zhistory
-SAVEHIST=1000
-HISTSIZE=999
+# History: the file and the effectively unlimited size z4h used.
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=1000000000
+SAVEHIST=1000000000
+setopt extended_history      # the history file is already in this format
 setopt share_history
-setopt hist_expire_dups_first
 setopt hist_ignore_dups
+setopt hist_ignore_space     # a leading space keeps a command out of history
+setopt hist_find_no_dups
+setopt hist_save_no_dups
 setopt hist_verify
+setopt hist_fcntl_lock
 
+# ---- Completion -------------------------------------------------------------
+fpath=($ZPLUGINS/zsh-completions/src $fpath)
+autoload -Uz compinit
+mkdir -p ${XDG_CACHE_HOME:-$HOME/.cache}/zsh
+compinit -d ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'  # lower case matches upper
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu no                       # fzf-tab draws the menu
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache
+zstyle ':fzf-tab:*' use-fzf-default-opts yes          # Catppuccin colors above
+
+# fzf's Ctrl+R (history), Ctrl+T (files) and Alt+C (cd) widgets. Loaded
+# before fzf-tab so that fzf-tab owns TAB.
+source <(fzf --zsh)
+source $ZPLUGINS/fzf-tab/fzf-tab.plugin.zsh
+
+# ---- Key bindings -----------------------------------------------------------
+# Emacs keymap. Without this, zsh picks the vi keymap because $EDITOR
+# contains "vi".
+bindkey -e
+
+# Ctrl+Backspace deletes one path component, not the whole path.
+WORDCHARS=${WORDCHARS//\/}
+
+# Ctrl+Alt+Backspace deletes a whole shell argument.
+autoload -Uz backward-kill-word-match
+zle -N backward-kill-shell-word backward-kill-word-match
+zstyle ':zle:backward-kill-shell-word' word-style shell
+
+() {
+  # Each key is listed with the sequences Alacritty and tmux send for it.
+  local -A keys=(
+    '^[[H'    beginning-of-line         # Home
+    '^[OH'    beginning-of-line
+    '^[[1~'   beginning-of-line
+    '^[[F'    end-of-line               # End
+    '^[OF'    end-of-line
+    '^[[4~'   end-of-line
+    '^[[3~'   delete-char               # Delete
+    '^[[1;5C' forward-word              # Ctrl+Right
+    '^[[1;5D' backward-word             # Ctrl+Left
+    '^[[3;5~' kill-word                 # Ctrl+Delete
+    '^H'      backward-kill-word        # Ctrl+Backspace
+    '^[^H'    backward-kill-shell-word  # Ctrl+Alt+Backspace
+    '^[^?'    backward-kill-shell-word
+    '^_'      undo                      # Ctrl+/
+    '^[[Z'    undo                      # Shift+Tab
+    '^[/'     redo                      # Alt+/
+  )
+  local key
+  for key in ${(k)keys}; do bindkey $key $keys[$key]; done
+}
+
+# ---- Terminal title: the running command, else the current directory -------
+autoload -Uz add-zsh-hook
+function _title_precmd()  { print -Pn '\e]0;%~\a' }
+function _title_preexec() { print -rn -- $'\e]0;'${(V)1}$'\a' }
+add-zsh-hook precmd  _title_precmd
+add-zsh-hook preexec _title_preexec
+
+# ---- Tools ------------------------------------------------------------------
 # zoxide: `z` jumps to a frecent directory, `zi` picks one with fzf.
 eval "$(zoxide init zsh)"
 
-# Source additional local files if they exist.
-z4h source ~/.env.zsh
-
-# Define key bindings.
-z4h bindkey z4h-backward-kill-word  Ctrl+Backspace     Ctrl+H
-z4h bindkey z4h-backward-kill-zword Ctrl+Alt+Backspace
-
-z4h bindkey undo Ctrl+/ Shift+Tab  # undo the last command line change
-z4h bindkey redo Alt+/             # redo the last undone command line change
-
-z4h bindkey z4h-cd-back    Alt+Left   # cd into the previous directory
-z4h bindkey z4h-cd-forward Alt+Right  # cd into the next directory
-z4h bindkey z4h-cd-up      Alt+Up     # cd into the parent directory
-z4h bindkey z4h-cd-down    Alt+Down   # cd into a child directory
-
-# Autoload functions.
-autoload -Uz zmv
-
-# Define functions and completions.
-function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
-compdef _directories md
-
-# Define named directories: ~w <=> Windows home directory on WSL.
-[[ -z $z4h_win_home ]] || hash -d w=$z4h_win_home
-
-# Define aliases.
-alias tree='tree -a -I .git'
-
-# Add flags to existing aliases.
-alias ls="${aliases[ls]:-ls} -A"
-
-# make script executable
-alias mkexec='chmod +x'
-
-# Set shell options: http://zsh.sourceforge.net/Doc/Release/Options.html.
-setopt glob_dots     # no special treatment for file names with a leading dot
-setopt no_auto_menu  # require an extra TAB press to open the completion menu
-
-# yazi
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	IFS= read -r -d '' cwd < "$tmp"
-	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
-	rm -f -- "$tmp"
-}
+(( $+commands[direnv] )) && eval "$(direnv hook zsh)"
 
 # fnm (installed to ~/.local/share/fnm, not on PATH by default)
 FNM_PATH="$HOME/.local/share/fnm"
@@ -138,9 +166,45 @@ if [[ -d $FNM_PATH ]]; then
   eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
-# opencode
-export PATH="$HOME/.opencode/bin:$PATH"
+# yazi: `y` opens yazi and cds to the directory it was left in.
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+# ---- Functions and aliases --------------------------------------------------
+autoload -Uz zmv
+
+function md() { [[ $# == 1 ]] && mkdir -p -- "$1" && cd -- "$1" }
+compdef _directories md
+
+# GNU coreutils (has dircolors) takes --color; BSD ls takes -G.
+if (( $+commands[dircolors] )); then
+  alias ls='ls --color=auto -A'
+  alias diff='diff --color=auto'
+else
+  alias ls='ls -G -A'
+fi
+alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
+alias tree='tree -a -I .git'
+alias mkexec='chmod +x'
+
+# Machine-local overrides (not tracked).
+[[ -r ~/.env.zsh ]] && source ~/.env.zsh
+
+# ---- Plugins that wrap widgets: keep last, in this order --------------------
+source $ZPLUGINS/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $ZPLUGINS/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZPLUGINS/zsh-history-substring-search/zsh-history-substring-search.zsh
+HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
+bindkey '^[[A' history-substring-search-up    # Up
+bindkey '^[OA' history-substring-search-up
+bindkey '^[[B' history-substring-search-down  # Down
+bindkey '^[OB' history-substring-search-down
 
 # OS-specific settings (JAVA_HOME, SDKMAN, ...) from the dotfiles-os package
 # for this OS. Keep this last: SDKMAN's init must run at the end of the file.
-z4h source ~/.config/dotfiles-os/zshrc.zsh
+[[ -r ~/.config/dotfiles-os/zshrc.zsh ]] && source ~/.config/dotfiles-os/zshrc.zsh

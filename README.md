@@ -16,7 +16,7 @@ The repository is organized as GNU Stow packages, grouped by the OS they apply t
 **Per-OS values in shared configs.** When a common config needs a value that differs per OS, it includes a file from `~/.config/dotfiles-os/`. Each OS folder has a `dotfiles-os` package that provides that directory, so whichever package is stowed decides the value:
 
 - `common/alacritty` imports `~/.config/dotfiles-os/alacritty.toml` (font family and size).
-- `common/zsh/.zshrc` sources `~/.config/dotfiles-os/zshrc.zsh` at the end (`JAVA_HOME`; SDKMAN on macOS).
+- `common/zsh/.zshrc` sources `~/.config/dotfiles-os/env.zsh` first (Homebrew's PATH on macOS) and `zshrc.zsh` at the end (`JAVA_HOME`; SDKMAN on macOS).
 
 The fragments live in a separate directory rather than next to the shared config because Stow can't merge one target directory from packages in two different stow directories (`common/` and `linux/`).
 
@@ -64,12 +64,17 @@ On macOS:
 
 - **[Alacritty](https://alacritty.org/)** — GPU-accelerated terminal emulator. Uses MesloLGS Nerd Font (size and family name set per OS in `dotfiles-os`) and a Catppuccin Macchiato palette.
 - **[Zsh](https://www.zsh.org/)** — login shell.
-- **[zsh4humans (z4h)](https://github.com/romkatv/zsh4humans)** — Zsh distribution managing fzf, autosuggestions, syntax-highlighting, and SSH teleportation.
-- **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — Zsh prompt, configured via `common/p10k/.p10k.zsh`.
+- **Zsh plugins** — no plugin manager: `.zshrc` clones each one into `~/.local/share/zsh/plugins` on first start, and `zsh-plugins-update` pulls them.
+  - **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — prompt, configured via `common/p10k/.p10k.zsh`.
+  - **[fzf-tab](https://github.com/Aloxaf/fzf-tab)** — TAB completion menu in fzf.
+  - **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** — greyed-out suggestion from history; Right or End accepts it.
+  - **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)** — colors the command line as you type.
+  - **[zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search)** — Up / Down search history for what's already typed.
+  - **[zsh-completions](https://github.com/zsh-users/zsh-completions)** — extra completion definitions (e.g. `mvn`, `node`, `openssl`, `ufw`).
 - **[zoxide](https://github.com/ajeetdsouza/zoxide)** — frecency-based directory jumper: `z <query>`, or `zi` to pick with fzf.
 - **[fnm](https://github.com/Schniz/fnm)** — fast Node.js version manager, with `--use-on-cd`.
-- **[direnv](https://direnv.net/)** — per-directory environment variables via `.envrc`, enabled through z4h.
-- **[fzf](https://github.com/junegunn/fzf)** — fuzzy finder; color palette overridden to match Catppuccin Macchiato.
+- **[direnv](https://direnv.net/)** — per-directory environment variables via `.envrc`; hooked in when installed.
+- **[fzf](https://github.com/junegunn/fzf)** — fuzzy finder; `Ctrl+R` history, `Ctrl+T` files, `Alt+C` cd. Color palette overridden to match Catppuccin Macchiato.
 - **[tmux](https://github.com/tmux/tmux)** — terminal multiplexer. Prefix remapped to `C-a`, vi mode, mouse on, Catppuccin-inspired status styling.
   - **[tpm](https://github.com/tmux-plugins/tpm)** — tmux plugin manager.
   - **[tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)** — saves and restores tmux sessions across reboots.
