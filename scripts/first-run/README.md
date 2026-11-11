@@ -2,6 +2,23 @@
 
 Make sure they are executable
 
+### macOS
+
+`macos.sh` is the only macOS script. Run it first on a new Mac, then
+`./stow-dotfiles.sh`, then log out. It:
+
+- installs Homebrew if it's missing (asks first) and trusts the AeroSpace and
+  SketchyBar taps;
+- lists every app, font and tool the dotfiles call that isn't installed yet
+  (CLI tools, AeroSpace, SketchyBar, Alacritty, Chrome, Claude Code, the Hack
+  and MesloLGS NF fonts, Node via fnm, SDKMAN, tpm) and asks: all, one by one,
+  or none. SDKMAN's installer is kept from editing the stowed `.zshrc` and
+  `~/.sdkman/etc/config`;
+- stops the SketchyBar Homebrew service (AeroSpace launches the bar);
+- writes the `defaults` the setup depends on: Spaces span displays, Mission
+  Control groups by app, the Dock stays hidden, the menu bar auto-hides,
+  ctrl+cmd drags windows, fast key repeat, dark mode.
+
 ### Boot chain: TPM-unlocked disk + greetd login
 
 Goal: no LUKS passphrase prompt; the disk is unlocked by the TPM2 chip (only
