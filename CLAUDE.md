@@ -8,7 +8,7 @@ The dotfiles serve two machines: an Arch Linux desktop and a macOS MacBook Air. 
 
 - `common/` — packages for both OSes (alacritty, nvim, p10k, themes, tmux, yazi, zsh).
 - `linux/` — Arch-only packages (hypr, waybar, walker, mako, greetd, portals, systemd, applications) and `dotfiles-os`.
-- `macos/` — macOS-only packages (aerospace, sketchybar) and `dotfiles-os`.
+- `macos/` — macOS-only packages (aerospace, sdkman, sketchybar) and `dotfiles-os`.
 
 Each package's internal layout mirrors `$HOME`. For example, `linux/hypr/.config/hypr/hyprland.lua` ends up at `~/.config/hypr/hyprland.lua`. `./stow-dotfiles.sh` restows every package in `common/` plus the current OS's folder. "Deploying" a change means re-running it. There is no Makefile or test suite.
 

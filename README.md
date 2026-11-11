@@ -8,7 +8,7 @@ The repository is organized as GNU Stow packages, grouped by the OS they apply t
 
 - `common/` — packages used on both machines (alacritty, nvim, p10k, themes, tmux, yazi, zsh).
 - `linux/` — Arch-only packages (Hyprland, Waybar, Walker, mako, greetd, portals, systemd units, desktop entries).
-- `macos/` — macOS-only packages (AeroSpace, SketchyBar).
+- `macos/` — macOS-only packages (AeroSpace, SDKMAN, SketchyBar).
 - `scripts/` — not a Stow package; see [Scripts & systemd units](#scripts--systemd-units).
 
 `./stow-dotfiles.sh` stows every package in `common/` plus every package in the folder for the current OS. It is safe to re-run after pulling.
@@ -21,6 +21,8 @@ The repository is organized as GNU Stow packages, grouped by the OS they apply t
 The fragments live in a separate directory rather than next to the shared config because Stow can't merge one target directory from packages in two different stow directories (`common/` and `linux/`).
 
 **Adding a new tool:** move its config into a package (`mv ~/.config/foo common/foo/.config/`, or under `linux/` or `macos/` if it's OS-only), run `./stow-dotfiles.sh`, then commit.
+
+**Fresh Mac:** install SDKMAN first, delete the `~/.sdkman/etc/config` it generates, then run `./stow-dotfiles.sh`. The installer is expected to refuse an existing `~/.sdkman`, and stow refuses to replace a file it doesn't own.
 
 ## Contents
 
@@ -73,6 +75,7 @@ On macOS:
   - **[zsh-completions](https://github.com/zsh-users/zsh-completions)** — extra completion definitions (e.g. `mvn`, `node`, `openssl`, `ufw`).
 - **[zoxide](https://github.com/ajeetdsouza/zoxide)** — frecency-based directory jumper: `z <query>`, or `zi` to pick with fzf.
 - **[fnm](https://github.com/Schniz/fnm)** — fast Node.js version manager, with `--use-on-cd`.
+- **[SDKMAN](https://sdkman.io/)** (macOS) — JDK version manager. `macos/sdkman` tracks `~/.sdkman/etc/config`: auto-env is on, so `cd` into a project with a `.sdkmanrc` switches Java. The healthcheck is off, because it adds a network request to every `sdk` call, including the auto-env one at shell start and on `cd`.
 - **[direnv](https://direnv.net/)** — per-directory environment variables via `.envrc`; hooked in when installed.
 - **[fzf](https://github.com/junegunn/fzf)** — fuzzy finder; `Ctrl+R` history, `Ctrl+T` files, `Alt+C` cd. Color palette overridden to match Catppuccin Macchiato.
 - **[tmux](https://github.com/tmux/tmux)** — terminal multiplexer. Prefix remapped to `C-a`, vi mode, mouse on, Catppuccin-inspired status styling.

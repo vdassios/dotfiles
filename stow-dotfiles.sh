@@ -17,6 +17,7 @@ esac
 # package and every app's config lands in this repo.
 mkdir -p "$HOME/.config"
 [[ $os == linux ]] && mkdir -p "$HOME/.local/share/applications"
+[[ $os == macos ]] && mkdir -p "$HOME/.sdkman/etc"
 
 for dir in common "$os"; do
   cd "$repo/$dir"
