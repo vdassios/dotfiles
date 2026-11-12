@@ -1,0 +1,35 @@
+// jdtls import fixes for Gradle and Grails projects.
+// Passed to the Gradle import by lua/plugins/java.lua (java.import.gradle.arguments = '-I <this file>').
+allprojects {
+  plugins.withId('java') {
+    project.pluginManager.apply('eclipse') // `apply plugin:` fails from an init script (IdeArtifactRegistry)
+    eclipse.classpath.defaultOutputDir = file("$buildDir/jdtls/default")
+    eclipse.classpath.file.whenMerged { cp ->
+      // jdtls output under build/, not bin/
+      cp.entries.findAll { it instanceof org.gradle.plugins.ide.eclipse.model.SourceFolder && it.output?.startsWith('bin/') }
+        .each { it.output = 'build/jdtls/' + it.output.substring(4) }
+      // a folder shared by two source sets is listed twice; JDT rejects it
+      def seen = [] as Set
+      cp.entries.removeAll { it.kind == 'src' && !seen.add(it.path) }
+      // JDT rejects a source folder nested in another unless the outer one excludes it
+      def srcs = cp.entries.findAll { it.kind == 'src' && !it.path.startsWith('/') }
+      srcs.each { outer ->
+        def nested = srcs.findAll { it.path.startsWith(outer.path + '/') }.collect { it.path.substring(outer.path.length() + 1) + '/' }
+        if (nested) outer.excludes = outer.excludes + nested
+      }
+    }
+  }
+  // Grails applies groovy-base, not groovy
+  plugins.withId('groovy-base') {
+    // compiled Groovy classes, so Java can resolve them; refreshed by each Gradle build.
+    // exported, so modules that depend on this one through a project reference see them too.
+    eclipse.classpath.file.whenMerged { cp ->
+      def dir = file("$buildDir/classes/groovy/main")
+      if (dir.exists()) {
+        def lib = new org.gradle.plugins.ide.eclipse.model.Library(cp.fileReference(dir))
+        lib.exported = true
+        cp.entries.add(lib)
+      }
+    }
+  }
+}
