@@ -18,8 +18,10 @@ return {
       format_on_save = function(bufnr)
         -- Skip format-on-save entirely for these filetypes. c/cpp have no well
         -- standardized coding style; vue is opted out on purpose (see the
-        -- commented-out vue formatter below).
-        local disable_filetypes = { c = true, cpp = true, vue = true }
+        -- commented-out vue formatter below). java has no formatter here, so
+        -- the fallback would be jdtls, whose Eclipse default style rewrites
+        -- code written in IntelliJ's; <leader>f still formats on demand.
+        local disable_filetypes = { c = true, cpp = true, vue = true, java = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
