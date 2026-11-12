@@ -125,6 +125,7 @@ Configured LSP servers: `lua_ls`, `ts_ls`, `cssls`, `tailwindcss`, `html`, `yaml
 - **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** — incremental parser for syntax highlighting and indentation (bash, c, lua, rust, go, astro, html, css, markdown, diff, …).
 - **[gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)** — gutter signs plus hunk stage/reset/preview/blame keymaps.
 - **[nvim-autopairs](https://github.com/windwp/nvim-autopairs)** — automatic bracket / quote pairing.
+- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)** — renders headings, code blocks, tables and checkboxes inline in markdown buffers.
 
 ## System utilities
 
