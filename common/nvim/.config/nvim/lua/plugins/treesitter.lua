@@ -3,6 +3,9 @@ return {
     'nvim-treesitter/nvim-treesitter',
     branch = 'main',
     lazy = false,
+    -- grails.nvim registers the `gsp` parser with nvim-treesitter, so it must
+    -- be loaded before `ts.install` below runs.
+    dependencies = { 'vdassios/grails.nvim' },
     build = ':TSUpdate',
     config = function()
       local ts = require 'nvim-treesitter'
@@ -40,6 +43,9 @@ return {
         'toml',
         'dockerfile',
         'python',
+        'java',
+        'groovy',
+        'gsp',
       }
 
       local installed = ts.get_installed 'parsers'

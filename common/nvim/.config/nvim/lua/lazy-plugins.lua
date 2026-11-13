@@ -36,7 +36,11 @@ require('lazy').setup({
   require 'plugins.autopairs',
   require 'plugins.render-markdown',
   require 'plugins.java',
+  require 'plugins.grails',
 }, {
+  -- Plugins marked `dev = true` load from a local checkout in ~/Projects when
+  -- one exists, and install from GitHub otherwise.
+  dev = { path = '~/Projects', fallback = true },
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
