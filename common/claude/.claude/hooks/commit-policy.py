@@ -33,12 +33,18 @@ def deny(problem):
     respond(permissionDecision="deny", permissionDecisionReason=f"{problem}\n\n{RULES}")
 
 
-def commit_message(cmd):
-    """Best-effort message from a heredoc or -m/--message; None if it comes from elsewhere."""
-    heredoc = re.search(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n(.*?)\n\s*\1\b", cmd, re.S)
-    if heredoc:
+def commit_message(tail):
+    """Best-effort message from the commit's own heredoc or -m/--message; None if it comes from elsewhere.
+
+    `tail` starts at `git commit`, so a heredoc feeding an earlier command is never read, and a
+    heredoc counts only if it opens before the commit's command ends.
+    """
+    separator = re.search(r"&&|\|\||;|\n", tail)
+    end = separator.start() if separator else len(tail)
+    heredoc = re.search(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n(.*?)\n\s*\1\b", tail, re.S)
+    if heredoc and heredoc.start() < end:
         return heredoc.group(2)
-    inline = re.search(r"(?:\s-[a-zA-Z]*m|\s--message)(?:\s+|=)(['\"])(.*?)(?<!\\)\1", cmd, re.S)
+    inline = re.search(r"(?:\s-[a-zA-Z]*m|\s--message)(?:\s+|=)(['\"])(.*?)(?<!\\)\1", tail, re.S)
     if inline:
         return inline.group(2)
     return None
@@ -47,13 +53,14 @@ def commit_message(cmd):
 cmd = json.load(sys.stdin).get("tool_input", {}).get("command", "")
 
 # `git commit`, `git -C dir commit`, `git -c k=v commit`; not `git log --grep commit`.
-if not re.search(r"\bgit(?:\s+-\S+(?:\s+[^-\s]\S*)?)*\s+commit\b", cmd):
+commit = re.search(r"\bgit(?:\s+-\S+(?:\s+[^-\s]\S*)?)*\s+commit\b", cmd)
+if not commit:
     sys.exit(0)
 
 if re.search(r"co-authored-by:[^\n]*(?:claude|anthropic)", cmd, re.I):
     deny("Commit blocked: the message has a Claude co-author trailer. Remove it.")
 
-message = commit_message(cmd)
+message = commit_message(cmd[commit.start():])
 if message is not None:
     lines = message.strip("\n").splitlines() or [""]
     header = lines[0].strip()
