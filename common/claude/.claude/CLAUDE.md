@@ -14,3 +14,4 @@
 
 ## Git
 - Keep each commit to one logical change where possible, and split unrelated changes into separate commits. Message format and the no-co-author rule are enforced by `~/.claude/hooks/commit-policy.py`.
+- Stash work on the branch it belongs to, not the current one. If a related stash already exists, combine them into one entry (apply both on that branch, re-stash, verify, then drop the old ones).
