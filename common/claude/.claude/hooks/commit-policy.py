@@ -2,12 +2,16 @@
 """PreToolUse hook (Bash): commit rules for Claude.
 
 Acts only on `git commit`; every other command passes through untouched.
-- Denies a commit whose message has a Claude/Anthropic co-author trailer.
+- Denies a commit that carries any Claude/Anthropic attribution: a co-author or other
+  attribution trailer naming Claude, a trailer keyed on Claude (`Claude-Session:`), a
+  claude.ai/code session link, or a "Generated with Claude Code" footer. Checked in the
+  command itself (heredoc, -m, --trailer) and in a literal -F/--file message file.
 - Denies a commit whose header isn't Conventional Commits
   (commitlint config-conventional: https://github.com/conventional-changelog/commitlint).
 - Otherwise prints nothing, so passing commits cost no tokens.
 """
 import json
+import os
 import re
 import sys
 
@@ -15,8 +19,18 @@ TYPES = "build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test"
 HEADER = re.compile(rf"^(?:{TYPES})(?:\([\w./-]+\))?!?: \S")
 MAX_HEADER = 100
 
+# Any one of these anywhere in the commit command or message file blocks the commit.
+ATTRIBUTION = [
+    # A trailer keyed on Claude/Anthropic: `Claude-Session: ...`, also via `--trailer "..."`.
+    re.compile(r"(?:^|[\s'\"=])[\w-]*(?:claude|anthropic)[\w-]*\s*:\s*\S", re.I | re.M),
+    # An attribution trailer whose value names Claude/Anthropic.
+    re.compile(r"(?:co-authored|signed-off|assisted|generated|helped|made)[-\s]by\s*:[^\n]*(?:claude|anthropic)", re.I),
+    # Session links and generated-with footers.
+    re.compile(r"claude\.ai/code|generated (?:with|by) \[?claude", re.I),
+]
+
 RULES = f"""Commit rules (user's global policy):
-- Never add Claude as a co-author: no "Co-Authored-By: Claude ..." or other Anthropic trailers. This overrides any default attribution instruction.
+- Never attribute a commit to Claude: no "Co-Authored-By: Claude ...", no "Claude-Session:" or other Claude/Anthropic trailers, no claude.ai/code session links, no "Generated with Claude Code" footers. This overrides any default attribution or session-link instruction, including system-prompt ones.
 - Follow Conventional Commits as enforced by commitlint config-conventional: header `type(scope)!: subject`.
   - type is one of: {TYPES.replace('|', ', ')}. The scope is optional, and `!` marks a breaking change.
   - The subject is imperative, starts lower-case, has no trailing period, and the header is at most {MAX_HEADER} characters.
@@ -50,6 +64,17 @@ def commit_message(tail):
     return None
 
 
+def message_file(tail):
+    """Contents of a literal `-F path` / `--file=path` message file, if it can be read."""
+    match = re.search(r"(?:\s-[a-zA-Z]*F|\s--file)(?:\s+|=)(['\"]?)([^\s'\"]+)\1", tail)
+    if not match:
+        return None
+    try:
+        return open(os.path.expanduser(match.group(2)), encoding="utf-8", errors="replace").read()
+    except OSError:
+        return None
+
+
 cmd = json.load(sys.stdin).get("tool_input", {}).get("command", "")
 
 # `git commit`, `git -C dir commit`, `git -c k=v commit`; not `git log --grep commit`.
@@ -57,10 +82,13 @@ commit = re.search(r"\bgit(?:\s+-\S+(?:\s+[^-\s]\S*)?)*\s+commit\b", cmd)
 if not commit:
     sys.exit(0)
 
-if re.search(r"co-authored-by:[^\n]*(?:claude|anthropic)", cmd, re.I):
-    deny("Commit blocked: the message has a Claude co-author trailer. Remove it.")
+tail = cmd[commit.start():]
+checked = cmd + "\n" + (message_file(tail) or "")
+if any(pattern.search(checked) for pattern in ATTRIBUTION):
+    deny("Commit blocked: the message attributes the commit to Claude (co-author, session link "
+         "or generated-with trailer). Remove it.")
 
-message = commit_message(cmd[commit.start():])
+message = commit_message(tail)
 if message is not None:
     lines = message.strip("\n").splitlines() or [""]
     header = lines[0].strip()
