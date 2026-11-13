@@ -112,17 +112,19 @@ On macOS:
 - **[lazydev.nvim](https://github.com/folke/lazydev.nvim)** — Lua LSP tuned for the Neovim config runtime (plugin types, `vim.uv`).
 - **[blink.cmp](https://github.com/Saghen/blink.cmp)** — completion engine (LSP, path, snippets, lazydev sources).
 - **[LuaSnip](https://github.com/L3MON4D3/LuaSnip)** — snippet engine backing blink.cmp.
+- **[nvim-java](https://github.com/nvim-java/nvim-java)** — Java through jdtls (downloads jdtls and the JDK it runs on); a Gradle init script fixes Grails source layouts and lets Java resolve compiled Groovy classes.
+- **[grails.nvim](https://github.com/vdassios/grails.nvim)** — GSP tree-sitter grammar and Grails navigation (go to definition from views, controllers and tags; `:GrailsAlternate`). Loaded from a `~/Projects/grails.nvim` checkout when present, from GitHub otherwise.
 
-Configured LSP servers: `lua_ls`, `ts_ls`, `cssls`, `tailwindcss`, `html`, `yamlls`.
+Configured LSP servers: `lua_ls`, `ts_ls`, `vue_ls`, `cssls`, `tailwindcss`, `html`, `astro`, `svelte`, `pyright`, `yamlls`, `tombi`, `groovyls` (classpath fed from Gradle by `lua/gradle-classpath.lua`; `:GradleClasspath` refreshes it), plus `jdtls` (nvim-java) and `grails` (grails.nvim).
 
 ### Formatting & linting
 
-- **[conform.nvim](https://github.com/stevearc/conform.nvim)** — format-on-save. Uses `stylua` (Lua), `isort`+`black` (Python), `prettierd`/`prettier` (JS/TS/JSON/HTML), `dockerfmt`, `rustywind`, `tombi`, `markdownlint`, `beautysh`.
+- **[conform.nvim](https://github.com/stevearc/conform.nvim)** — format-on-save. Uses `stylua` (Lua), `isort`+`black` (Python), `prettierd`/`prettier` (JS/TS/JSON/HTML), `dockerfmt`, `rustywind`, `tombi`, `markdownlint`, `beautysh`. Off on save for C/C++, Vue and Java.
 - **[nvim-lint](https://github.com/mfussenegger/nvim-lint)** — async linting. Uses `eslint_d` (JS/TS/CSS), `markdownlint`, `jsonlint`, `hadolint`, `vale`.
 
 ### Syntax & editing
 
-- **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** — incremental parser for syntax highlighting and indentation (bash, c, lua, rust, go, astro, html, css, markdown, diff, …).
+- **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** — incremental parser for syntax highlighting and indentation (bash, c, lua, rust, go, astro, html, css, markdown, diff, java, groovy, gsp, …).
 - **[gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)** — gutter signs plus hunk stage/reset/preview/blame keymaps.
 - **[nvim-autopairs](https://github.com/windwp/nvim-autopairs)** — automatic bracket / quote pairing.
 - **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)** — renders headings, code blocks, tables and checkboxes inline in markdown buffers.
