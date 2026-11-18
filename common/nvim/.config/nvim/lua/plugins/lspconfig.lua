@@ -247,7 +247,11 @@ return {
             },
           },
         },
-        html = {},
+        -- Also on GSP views, for hover and completion of HTML elements and attributes;
+        -- grails.nvim and the Grails server handle the GSP tags and expressions.
+        html = {
+          filetypes = { 'html', 'templ', 'gsp' },
+        },
         -- Groovy. The server cannot read Gradle builds, so it gets the classpath from
         -- lua/gradle-classpath.lua once it has started.
         groovyls = {

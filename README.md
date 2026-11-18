@@ -115,7 +115,7 @@ On macOS:
 - **[nvim-java](https://github.com/nvim-java/nvim-java)** — Java through jdtls (downloads jdtls and the JDK it runs on); a Gradle init script fixes Grails source layouts and lets Java resolve compiled Groovy classes.
 - **[grails.nvim](https://github.com/vdassios/grails.nvim)** — GSP tree-sitter grammar and Grails navigation (go to definition from views, controllers and tags; `:GrailsAlternate`). Loaded from a `~/Projects/grails.nvim` checkout when present, from GitHub otherwise.
 
-Configured LSP servers: `lua_ls`, `ts_ls`, `vue_ls`, `cssls`, `tailwindcss`, `html`, `astro`, `svelte`, `pyright`, `yamlls`, `tombi`, `groovyls` (classpath fed from Gradle by `lua/gradle-classpath.lua`; `:GradleClasspath` refreshes it), plus `jdtls` (nvim-java) and `grails` (grails.nvim).
+Configured LSP servers: `lua_ls`, `ts_ls`, `vue_ls`, `cssls`, `tailwindcss`, `html` (also on GSP views, for HTML hover and completion), `astro`, `svelte`, `pyright`, `yamlls`, `tombi`, `groovyls` (classpath fed from Gradle by `lua/gradle-classpath.lua`; `:GradleClasspath` refreshes it), plus `jdtls` (nvim-java) and `grails` (grails.nvim).
 
 ### Formatting & linting
 

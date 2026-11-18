@@ -20,8 +20,10 @@ return {
         -- standardized coding style; vue is opted out on purpose (see the
         -- commented-out vue formatter below). java has no formatter here, so
         -- the fallback would be jdtls, whose Eclipse default style rewrites
-        -- code written in IntelliJ's; <leader>f still formats on demand.
-        local disable_filetypes = { c = true, cpp = true, vue = true, java = true }
+        -- code written in IntelliJ's; <leader>f still formats on demand. gsp has
+        -- no formatter either, and the fallback would be the html server, which
+        -- knows nothing of GSP tags and scriptlets.
+        local disable_filetypes = { c = true, cpp = true, vue = true, java = true, gsp = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
