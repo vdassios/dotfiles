@@ -18,7 +18,7 @@ allprojects {
         if (nested) outer.excludes = outer.excludes + nested
       }
       // JDT copies non-Java files of a source folder into its output. Copies of .groovy files under build/
-      // give groovyls duplicate classes, and JDT cannot compile them anyway.
+      // would be duplicate sources, and JDT cannot compile them anyway.
       srcs.each { it.excludes = it.excludes + ['**/*.groovy'] }
     }
   }

@@ -63,16 +63,6 @@ return {
         end, vim.lsp.get_clients { bufnr = 0 }))
       end, { desc = 'List LSP clients attached to the current buffer' })
 
-      vim.api.nvim_create_user_command('GradleClasspath', function()
-        local clients = vim.lsp.get_clients { bufnr = 0, name = 'groovyls' }
-        if #clients == 0 then
-          vim.notify('No groovyls client in this buffer', vim.log.levels.WARN)
-        end
-        for _, client in ipairs(clients) do
-          require('gradle-classpath').apply(client, true)
-        end
-      end, { desc = 'Re-resolve the Gradle classpath for groovyls' })
-
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -251,13 +241,6 @@ return {
         -- grails.nvim and the Grails server handle the GSP tags and expressions.
         html = {
           filetypes = { 'html', 'templ', 'gsp' },
-        },
-        -- Groovy. The server cannot read Gradle builds, so it gets the classpath from
-        -- lua/gradle-classpath.lua once it has started.
-        groovyls = {
-          on_init = function(client)
-            require('gradle-classpath').apply(client)
-          end,
         },
         pyright = {},
         vue_ls = {},
