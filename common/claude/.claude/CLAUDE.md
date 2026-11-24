@@ -12,6 +12,17 @@
 ## Done
 - Work is done when an outside check passes: a test, typecheck, build exit code, or a screenshot against the target. Report the command you ran and its result.
 
+## Docs
+Rules for docs that people read (READMEs, `docs/`), modelled on the Google and Django writing guides:
+- Headings in sentence case.
+- Write to the reader as "you", in the active voice, with short plain sentences.
+- Use numbered steps for anything done in order. Give each command a one-line intro ending in a colon, then its own code block.
+- Put the condition before the instruction ("On a Mac, run…").
+- Use code formatting for paths, commands, and keys.
+- No filler such as "simply", "just", "please note", or "blazing-fast".
+- Spell terms out: "go to definition", not "goto def". Write "and" or "or", not "/". Use the serial comma.
+- In tables, every column and note must earn its place: no column that is always the same value or mostly empty, and notes only for limits and caveats. Explanations of how something works go in the prose docs.
+
 ## Git
 - Keep each commit to one logical change where possible, and split unrelated changes into separate commits. Message format and the no-co-author rule are enforced by `~/.claude/hooks/commit-policy.py`.
 - Push only commits the user has asked to push. Approving a plan or saying "go for it" doesn't cover pushing new commits, so commit locally and ask.
