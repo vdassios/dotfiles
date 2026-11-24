@@ -1,154 +1,329 @@
 # dotfiles
 
-Personal configuration for two machines: an Arch Linux desktop and a macOS MacBook Air. The Arch side started as a customization layer on top of DHH's [omarchy](https://learn.omacom.io/2/the-omarchy-manual) and is being pared down toward a barebones Arch setup.
+These are the configuration files for my two machines: an Arch Linux desktop
+and a MacBook Air.
 
-## Layout
+- [Installation](#installation)
+- [How the repository is organized](#how-the-repository-is-organized)
+- [Desktop](#desktop)
+- [Shell and terminal](#shell-and-terminal)
+- [Neovim](#neovim)
+- [Other tools](#other-tools)
+- [Scripts and services](#scripts-and-services)
 
-The repository is organized as GNU Stow packages, grouped by the OS they apply to. Each package mirrors the layout under `$HOME` (e.g. `linux/hypr/.config/hypr/...`) so the configs can be symlinked straight into place.
+## Installation
 
-- `common/` — packages used on both machines (alacritty, nvim, p10k, themes, tmux, yazi, zsh).
-- `linux/` — Arch-only packages (Hyprland, Waybar, Walker, mako, greetd, portals, systemd units, desktop entries).
-- `macos/` — macOS-only packages (AeroSpace, SDKMAN, SketchyBar).
-- `scripts/` — not a Stow package; see [Scripts & systemd units](#scripts--systemd-units).
+The configs are installed with [GNU Stow](https://www.gnu.org/software/stow/),
+which links each file into your home directory.
 
-`./stow-dotfiles.sh` stows every package in `common/` plus every package in the folder for the current OS. It is safe to re-run after pulling.
+1. Clone the repository into `~/dotfiles`:
 
-**Per-OS values in shared configs.** When a common config needs a value that differs per OS, it includes a file from `~/.config/dotfiles-os/`. Each OS folder has a `dotfiles-os` package that provides that directory, so whichever package is stowed decides the value:
+   ```sh
+   git clone https://github.com/vdassios/dotfiles.git ~/dotfiles
+   ```
 
-- `common/alacritty` imports `~/.config/dotfiles-os/alacritty.toml` (font family and size).
-- `common/zsh/.zshrc` sources `~/.config/dotfiles-os/env.zsh` first (Homebrew's PATH on macOS) and `zshrc.zsh` at the end (`JAVA_HOME`; SDKMAN on macOS).
+2. Install Stow. On a Mac, run the setup script instead. It installs Homebrew,
+   Stow and the apps these configs use, then changes the system settings that
+   AeroSpace and SketchyBar need:
 
-The fragments live in a separate directory rather than next to the shared config because Stow can't merge one target directory from packages in two different stow directories (`common/` and `linux/`).
+   ```sh
+   ~/dotfiles/scripts/first-run/macos.sh
+   ```
 
-**Adding a new tool:** move its config into a package (`mv ~/.config/foo common/foo/.config/`, or under `linux/` or `macos/` if it's OS-only), run `./stow-dotfiles.sh`, then commit.
+   On Arch:
 
-**Fresh Mac:** install SDKMAN first, delete the `~/.sdkman/etc/config` it generates, then run `./stow-dotfiles.sh`. The installer is expected to refuse an existing `~/.sdkman`, and stow refuses to replace a file it doesn't own.
+   ```sh
+   sudo pacman -S stow
+   ```
 
-## Contents
+3. Link the configs into your home directory:
 
-- [Desktop & window manager](#desktop--window-manager)
-- [Shell & terminal](#shell--terminal)
-- [Editor (Neovim)](#editor-neovim)
-- [System utilities](#system-utilities)
-- [Scripts & systemd units](#scripts--systemd-units)
+   ```sh
+   cd ~/dotfiles
+   ./stow-dotfiles.sh
+   ```
 
-## Desktop & window manager
+4. On Arch, install the helper scripts as described in
+   [`scripts/README.md`](scripts/README.md), then run the one-time setup in
+   [`scripts/first-run/README.md`](scripts/first-run/README.md).
 
-- **[Hyprland](https://hypr.land/)** — dynamic tiling Wayland compositor. Lua config (0.57+): `hyprland.lua` requires `envs.lua`, `monitors.lua`, `input.lua`, `looknfeel.lua`, `windows.lua`, `bindings.lua`, `autostart.lua`.
-- **[Hypridle](https://github.com/hyprwm/hypridle)** — idle daemon that locks the session and turns the display off after a timeout.
-- **[Hyprlock](https://github.com/hyprwm/hyprlock)** — screen locker for Hyprland, styled with Catppuccin Macchiato.
-- **[Hyprsunset](https://github.com/hyprwm/hyprsunset)** — blue-light / color-temperature manager, run via its packaged user unit (`systemctl --user enable --now hyprsunset.service`).
-- **[hyprshutdown](https://github.com/hyprwm/hyprshutdown)** — graceful shutdown: asks apps to close, exits Hyprland, then powers off. Bound to `SUPER+SHIFT+E`.
-- **[Hyprshot](https://github.com/Gustash/Hyprshot)** — screenshot utility (window / output / region) bound under `PRINT`.
-- **[xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland)** — XDG portal used for screen sharing.
-- **[xdg-desktop-portal-termfilechooser](https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser)** (AUR) — routes "Open file" / "Save as" dialogs (Chromium, Firefox, GTK apps) to yazi in a floating Alacritty window. Configured in the `portals` package; `GTK_USE_PORTAL=1` in `envs.lua` opts Firefox/GTK3 in.
-- **[Waybar](https://github.com/Alexays/Waybar)** — top status bar; shows workspaces, clock, keyboard layout, bluetooth, network, audio, CPU, battery.
-- **[Walker](https://github.com/abenz1267/walker)** — Wayland application launcher (apps, web search, calc, symbols, clipboard, files). Themed with `macchiatto`.
-- **[Elephant](https://github.com/abenz1267/elephant)** — data provider backend for Walker, run as a user systemd service.
-- **[Mako](https://github.com/emersion/mako)** — lightweight Wayland notification daemon.
-- **[swaybg](https://github.com/swaywm/swaybg)** — Wayland wallpaper setter (loads `~/Wallpapers/cats.png`).
-- **[SwayOSD](https://github.com/ErikReider/SwayOSD)** — GTK on-screen display for volume / brightness / caps-lock.
-- **[greetd](https://sr.ht/~kennylevinsen/greetd/) + [tuigreet](https://github.com/apognu/tuigreet)** — login manager on VT1; the only password prompt at boot (the LUKS root is unlocked by TPM2). `linux/greetd/.config/greetd/` holds `config.toml` and the `banner.txt` greeting; `scripts/first-run/greetd.sh` copies them into `/etc/greetd/`.
-- **[uwsm](https://github.com/Vladimir-csp/uwsm)** — Universal Wayland Session Manager, used to launch apps under systemd user scopes.
-- **[polkit-gnome](https://gitlab.gnome.org/Archive/policykit-gnome)** — PolicyKit authentication agent for privileged GUI prompts.
-- **[fcitx5](https://fcitx-im.org/)** — input method framework (multilingual typing).
-- **[qt6-wayland](https://archlinux.org/packages/extra/x86_64/qt6-wayland/)** — native Wayland backend for Qt6 apps (without it they fall back to XWayland despite `QT_QPA_PLATFORM`).
-- **[wl-clipboard](https://github.com/bugaevc/wl-clipboard) + [cliphist](https://github.com/sentriz/cliphist)** — clipboard history: `wl-paste --watch cliphist store` runs from `autostart.lua`; `SUPER+V` browses history through Walker's dmenu mode.
-- **[playerctl](https://github.com/altdesktop/playerctl)** — MPRIS media-key controller for XF86Audio keys.
-- **[brightnessctl](https://github.com/Hummer12007/brightnessctl)** — backlight brightness control used on resume from DPMS off.
+5. On a Mac, log out and back in.
 
-On macOS:
+To pick up changes after a `git pull`, run `./stow-dotfiles.sh` again. It
+relinks every package, so it also removes links to files that no longer exist.
 
-- **[AeroSpace](https://github.com/nikitabobko/AeroSpace)** — i3-like tiling window manager. Starts at login, launches SketchyBar, and binds `cmd` + `hjkl` / `1`–`9` for focus, move and workspaces.
-- **[SketchyBar](https://github.com/FelixKratz/SketchyBar)** — top status bar; shows AeroSpace workspaces, the front app, clock, volume and battery. Item scripts live in `plugins/`.
+If you install SDKMAN by hand instead of through `macos.sh`, delete the
+`~/.sdkman/etc/config` file it creates before you run `./stow-dotfiles.sh`.
+Stow won't replace a file that it didn't create.
 
-## Shell & terminal
+## How the repository is organized
 
-- **[Alacritty](https://alacritty.org/)** — GPU-accelerated terminal emulator. Uses MesloLGS Nerd Font (size and family name set per OS in `dotfiles-os`) and a Catppuccin Macchiato palette.
-- **[Zsh](https://www.zsh.org/)** — login shell.
-- **Zsh plugins** — no plugin manager: `.zshrc` clones each one into `~/.local/share/zsh/plugins` on first start, and `zsh-plugins-update` pulls them.
-  - **[Powerlevel10k](https://github.com/romkatv/powerlevel10k)** — prompt, configured via `common/p10k/.p10k.zsh`.
-  - **[fzf-tab](https://github.com/Aloxaf/fzf-tab)** — TAB completion menu in fzf.
-  - **[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)** — greyed-out suggestion from history; Right or End accepts it.
-  - **[zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)** — colors the command line as you type.
-  - **[zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search)** — Up / Down search history for what's already typed.
-  - **[zsh-completions](https://github.com/zsh-users/zsh-completions)** — extra completion definitions (e.g. `mvn`, `node`, `openssl`, `ufw`).
-- **[zoxide](https://github.com/ajeetdsouza/zoxide)** — frecency-based directory jumper: `z <query>`, or `zi` to pick with fzf.
-- **[fnm](https://github.com/Schniz/fnm)** — fast Node.js version manager, with `--use-on-cd`.
-- **[SDKMAN](https://sdkman.io/)** (macOS) — JDK version manager. `macos/sdkman` tracks `~/.sdkman/etc/config`: auto-env is on, so `cd` into a project with a `.sdkmanrc` switches Java. The healthcheck is off, because it adds a network request to every `sdk` call, including the auto-env one at shell start and on `cd`.
-- **[direnv](https://direnv.net/)** — per-directory environment variables via `.envrc`; hooked in when installed.
-- **[fzf](https://github.com/junegunn/fzf)** — fuzzy finder; `Ctrl+R` history, `Ctrl+T` files, `Alt+C` cd. Color palette overridden to match Catppuccin Macchiato.
-- **[tmux](https://github.com/tmux/tmux)** — terminal multiplexer. Prefix remapped to `C-a`, vi mode, mouse on, Catppuccin-inspired status styling.
-  - **[tpm](https://github.com/tmux-plugins/tpm)** — tmux plugin manager.
-  - **[tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)** — saves and restores tmux sessions across reboots.
+Each package is a folder whose contents mirror your home directory. For
+example, `linux/hypr/.config/hypr/hyprland.lua` is linked to
+`~/.config/hypr/hyprland.lua`.
 
-## Editor (Neovim)
+Packages are grouped by the machine they belong to:
 
-[Neovim](https://neovim.io/) configuration based on [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), split into `lua/plugins/*`. Plugins are managed by [lazy.nvim](https://github.com/folke/lazy.nvim) and locked via `lazy-lock.json`.
+- `common/` holds the packages used on both machines: alacritty, claude, nvim,
+  p10k, themes, tmux, yazi and zsh.
+- `linux/` holds the Arch-only packages: Hyprland, Waybar, Walker, mako,
+  greetd, the desktop portals, systemd units and desktop entries.
+- `macos/` holds the macOS-only packages: AeroSpace, SDKMAN and SketchyBar.
 
-### Plugin manager & helpers
+`stow-dotfiles.sh` links every package in `common/`, plus every package in the
+folder for the current OS. The `scripts/` folder is not a package. See
+[Scripts and services](#scripts-and-services).
 
-- **[lazy.nvim](https://github.com/folke/lazy.nvim)** — plugin manager and lockfile-driven loader.
-- **[guess-indent.nvim](https://github.com/NMAC427/guess-indent.nvim)** — detects `tabstop` / `shiftwidth` automatically per buffer.
-- **[nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)** — Nerd Font file-type icons used by pickers and the statusline.
+### Settings that differ between machines
 
-### UI & colorscheme
+A few shared configs need a different value on each machine, such as the font
+size in Alacritty. These configs read the value from a file in
+`~/.config/dotfiles-os/`. Both `linux/` and `macos/` contain a `dotfiles-os`
+package that provides this folder, so each machine gets its own copy.
 
-- **[catppuccin/nvim](https://github.com/catppuccin/nvim)** — active colorscheme (`catppuccin-macchiato`).
-- **[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)** — statusline with minimal separators.
+- Alacritty imports `alacritty.toml`, which sets the font family and size.
+- `.zshrc` sources `env.zsh` first, which adds Homebrew to your `PATH` on
+  macOS. It sources `zshrc.zsh` last, which sets `JAVA_HOME` and, on macOS,
+  loads SDKMAN.
 
-### Navigation & search
+If you need a new per-machine value, add it to both `dotfiles-os` packages.
 
-- **[fzf-lua](https://github.com/ibhagwan/fzf-lua)** — fuzzy picker for files, grep, buffers, help, diagnostics, treesitter symbols, and LSP actions (`;f`, `;r`, `;t`, …).
-- **[oil.nvim](https://github.com/stevearc/oil.nvim)** — edit the filesystem as a buffer; opened with `sf` as the default explorer.
+These files have their own folder because Stow can't fill one folder from two
+places. If `common/alacritty` and `linux/alacritty` both put files in
+`~/.config/alacritty/`, Stow would stop with an error.
 
-### LSP, completion & snippets
+### Adding a new tool
 
-- **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)** — baseline LSP client configs.
-- **[mason.nvim](https://github.com/mason-org/mason.nvim)** — installs LSP servers, linters, and formatters.
-- **[mason-lspconfig.nvim](https://github.com/mason-org/mason-lspconfig.nvim)** — bridges Mason with nvim-lspconfig.
-- **[mason-tool-installer.nvim](https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim)** — declaratively ensures tools are installed.
-- **[fidget.nvim](https://github.com/j-hui/fidget.nvim)** — LSP progress notifications in the corner.
-- **[lazydev.nvim](https://github.com/folke/lazydev.nvim)** — Lua LSP tuned for the Neovim config runtime (plugin types, `vim.uv`).
-- **[blink.cmp](https://github.com/Saghen/blink.cmp)** — completion engine (LSP, path, snippets, lazydev sources).
-- **[LuaSnip](https://github.com/L3MON4D3/LuaSnip)** — snippet engine backing blink.cmp.
-- **[nvim-java](https://github.com/nvim-java/nvim-java)** — Java through jdtls (downloads jdtls and the JDK it runs on); a Gradle init script fixes Grails source layouts and lets Java resolve compiled Groovy classes.
-- **[grails.nvim](https://github.com/vdassios/grails.nvim)** — GSP tree-sitter grammar, Grails navigation (`:GrailsAlternate`) and the client for [grails-language-server](https://github.com/vdassios/grails-language-server) (Groovy and GSP on the project's JDK; `:GrailsInstallServer` downloads it). Loaded from a `~/Projects/grails.nvim` checkout when present, from GitHub otherwise.
+1. Move the tool's config into a new package. Use `linux/` or `macos/` instead
+   of `common/` if you only use the tool on one machine:
 
-Configured LSP servers: `lua_ls`, `ts_ls`, `vue_ls`, `cssls`, `tailwindcss`, `html` (also on GSP views, for HTML hover and completion), `astro`, `svelte`, `pyright`, `yamlls`, `tombi`, plus `jdtls` (nvim-java), and `grails_ls` (grails-language-server) and `grails` (both through grails.nvim).
+   ```sh
+   mkdir -p ~/dotfiles/common/foo/.config
+   mv ~/.config/foo ~/dotfiles/common/foo/.config/
+   ```
 
-### Formatting & linting
+2. Run `./stow-dotfiles.sh` to link it back into place.
 
-- **[conform.nvim](https://github.com/stevearc/conform.nvim)** — format-on-save. Uses `stylua` (Lua), `isort`+`black` (Python), `prettierd`/`prettier` (JS/TS/JSON/HTML), `dockerfmt`, `rustywind`, `tombi`, `markdownlint`, `beautysh`. Off on save for C/C++, Vue and Java.
-- **[nvim-lint](https://github.com/mfussenegger/nvim-lint)** — async linting. Uses `eslint_d` (JS/TS/CSS), `markdownlint`, `jsonlint`, `hadolint`, `vale`.
+3. Commit the new package.
 
-### Syntax & editing
+## Desktop
 
-- **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** — incremental parser for syntax highlighting and indentation (bash, c, lua, rust, go, astro, html, css, markdown, diff, java, groovy, gsp, …).
-- **[gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)** — gutter signs plus hunk stage/reset/preview/blame keymaps.
-- **[nvim-autopairs](https://github.com/windwp/nvim-autopairs)** — automatic bracket / quote pairing.
-- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)** — renders headings, code blocks, tables and checkboxes inline in markdown buffers.
+### Arch Linux
 
-## System utilities
+- [Hyprland](https://hypr.land/) is the tiling window manager. Its config is
+  written in Lua, which Hyprland requires from version 0.57. `hyprland.lua`
+  loads one file per topic: `envs`, `monitors`, `input`, `looknfeel`,
+  `windows`, `bindings` and `autostart`.
+- [Hypridle](https://github.com/hyprwm/hypridle) locks the screen and turns off
+  the display when the machine is idle.
+- [Hyprlock](https://github.com/hyprwm/hyprlock) is the lock screen.
+- [Hyprsunset](https://github.com/hyprwm/hyprsunset) changes the screen's
+  color temperature. It leaves the screen unchanged until you add a night
+  profile to `hyprsunset.conf`. Turn it on with
+  `systemctl --user enable --now hyprsunset.service`.
+- [hyprshutdown](https://github.com/hyprwm/hyprshutdown) closes your apps
+  before it powers off the machine. Press `Super+Shift+E` to run it.
+- [Hyprshot](https://github.com/Gustash/Hyprshot) takes screenshots of a
+  window, a screen or a region. Its shortcuts use the `Print` key.
+- [greetd](https://sr.ht/~kennylevinsen/greetd/) and
+  [tuigreet](https://github.com/apognu/tuigreet) show the login screen. It's
+  the only password prompt at boot, because the TPM chip unlocks the
+  encrypted disk. `greetd` can't read your home directory, so its config is
+  copied into `/etc/greetd/` instead of linked. After you edit
+  `linux/greetd/`, run `scripts/first-run/greetd.sh` again.
+- [Waybar](https://github.com/Alexays/Waybar) is the status bar. It shows
+  workspaces, the clock, the keyboard layout, Bluetooth, network, audio, CPU
+  and battery.
+- [Walker](https://github.com/abenz1267/walker) is the app launcher. It also
+  searches the web, does math, inserts symbols and browses your clipboard
+  history and files.
+- [Elephant](https://github.com/abenz1267/elephant) supplies Walker's search
+  results and runs as a systemd service. If Walker stops working, check
+  Elephant first.
+- [Mako](https://github.com/emersion/mako) shows notifications.
+- [SwayOSD](https://github.com/ErikReider/SwayOSD) shows a popup when you
+  change the volume or brightness, or press Caps Lock.
+- [swaybg](https://github.com/swaywm/swaybg) sets the wallpaper from
+  `~/Wallpapers/cats.png`.
+- [cliphist](https://github.com/sentriz/cliphist) and
+  [wl-clipboard](https://github.com/bugaevc/wl-clipboard) keep a clipboard
+  history. Press `Super+V` to search it in Walker.
+- [xdg-desktop-portal-termfilechooser](https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser)
+  replaces the "Open file" and "Save as" dialogs with yazi in a floating
+  terminal. It works in Chromium, Firefox and GTK apps. Install it from the
+  AUR.
+- [xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland)
+  handles screen sharing.
+- [uwsm](https://github.com/Vladimir-csp/uwsm) starts apps as systemd units,
+  so each one can be tracked and stopped on its own.
+- [polkit-gnome](https://gitlab.gnome.org/Archive/policykit-gnome) asks for
+  your password when an app needs admin rights.
+- [fcitx5](https://fcitx-im.org/) lets you type in other languages.
+- [qt6-wayland](https://archlinux.org/packages/extra/x86_64/qt6-wayland/)
+  lets Qt 6 apps run natively on Wayland. Without it, they fall back to
+  XWayland.
+- [playerctl](https://github.com/altdesktop/playerctl) makes the media keys
+  control whichever player is active.
+- [brightnessctl](https://github.com/Hummer12007/brightnessctl) restores the
+  screen brightness when the display wakes up.
 
-Bound in Hyprland or called from scripts:
+### macOS
 
-- **[yazi](https://github.com/sxyzxun/yazi)** — blazing-fast terminal file manager, bound to `SUPER+F` and wrapped by a `y` shell function that CDs to its last directory. Also the XDG default for folders (`linux/applications/…/yazi-open.desktop`) and the system file picker. Themed with the Catppuccin Macchiato flavor (pinned in `package.toml`; restore with `ya pkg install`).
-- **[btop](https://github.com/aristocratos/btop)** — resource monitor, bound to `SUPER+T`.
-- **[lazydocker](https://github.com/jesseduffield/lazydocker)** — TUI for Docker, bound to `SUPER+D`.
-- **[pamixer](https://github.com/cdemoulins/pamixer)** — PulseAudio volume CLI used by the Waybar audio module.
-- **[gum](https://github.com/charmbracelet/gum)** — interactive TUI prompts used by `tz-select.sh` (styled via `GUM_*` vars in `envs.lua`).
-- **[jq](https://jqlang.org/)** — JSON query tool used in scripts (e.g. `launch-or-focus.sh`) to parse `hyprctl` output.
-- **[Obsidian](https://obsidian.md/)** — markdown notes app (`SUPER+O`).
-- **[Signal](https://signal.org/)** — messaging app (`SUPER+G`).
+- [AeroSpace](https://github.com/nikitabobko/AeroSpace) is the tiling window
+  manager. It starts at login and launches SketchyBar. Press `Cmd` with
+  `H`, `J`, `K` or `L` to move focus, and add `Shift` to move the window.
+  Press `Cmd` with a number to switch workspaces.
+- [SketchyBar](https://github.com/FelixKratz/SketchyBar) is the status bar. It
+  shows workspaces, the active app, the clock, volume and battery. The script
+  behind each item is in `plugins/`.
 
-## Scripts & systemd units
+## Shell and terminal
 
-- `scripts/` — helper shell scripts (launchers, battery monitor, screen lock, timezone picker, terminal CWD reporter). The `scripts/README.md` describes copying them into `~/.local/bin/`.
-- `linux/systemd/.config/systemd/user/` — user units:
-  - `battery-monitor.service` / `.timer` — periodic low-battery notifier.
-  - `elephant.service` — keeps the Elephant data provider running for Walker.
-- `linux/applications/.local/share/applications/` — custom desktop entries (`yazi-open.desktop`, the `inode/directory` handler set by `scripts/first-run/mimetypes.sh`).
-- `linux/portals/.config/` — `xdg-desktop-portal/hyprland-portals.conf` (sends FileChooser to termfilechooser) and `xdg-desktop-portal-termfilechooser/config` (yazi wrapper + terminal). Installed by `scripts/first-run/file-chooser.sh`.
-- `scripts/first-run/` — one-time system setup. The boot chain (`network-online.sh`, `uki.sh`, `secure-boot.sh`, `tpm-unlock.sh`, `greetd.sh`) sets up a signed [systemd-boot](https://wiki.archlinux.org/title/Systemd-boot) + [UKI](https://wiki.archlinux.org/title/Unified_kernel_image), [sbctl](https://github.com/Foxboron/sbctl) Secure Boot keys and a TPM2-unlocked LUKS root ([systemd-cryptenroll](https://wiki.archlinux.org/title/Systemd-cryptenroll)), so the greetd login is the only password at boot; order and reboots are in `scripts/first-run/README.md`. On macOS, `scripts/first-run/macos.sh` offers to install the apps and tools the dotfiles call, then applies the system settings AeroSpace and SketchyBar rely on.
-- `common/themes/` — extra app themes (currently a qBittorrent Iceberg theme).
+- [Alacritty](https://alacritty.org/) is the terminal. It uses the MesloLGS
+  Nerd Font and the Catppuccin Macchiato colors.
+- [Zsh](https://www.zsh.org/) is the shell. There is no plugin manager: the
+  first time Zsh starts, `.zshrc` downloads each plugin into
+  `~/.local/share/zsh/plugins`. Run `zsh-plugins-update` to update them. The
+  plugins are:
+  - [Powerlevel10k](https://github.com/romkatv/powerlevel10k), the prompt.
+    Its settings are in `common/p10k/.p10k.zsh`.
+  - [fzf-tab](https://github.com/Aloxaf/fzf-tab), which shows Tab completions
+    in fzf.
+  - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions),
+    which suggests a command from your history as you type. Press Right or End
+    to accept it.
+  - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting),
+    which colors the command as you type.
+  - [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search),
+    which makes Up and Down search your history for what you've typed so far.
+  - [zsh-completions](https://github.com/zsh-users/zsh-completions), which
+    adds completions for more commands, such as `mvn`, `node` and `openssl`.
+- [fzf](https://github.com/junegunn/fzf) is a fuzzy finder. Press `Ctrl+R` to
+  search history, `Ctrl+T` to pick a file and `Alt+C` to change directory.
+- [zoxide](https://github.com/ajeetdsouza/zoxide) remembers the directories
+  you visit. Type `z` and part of a name to jump to one, or `zi` to pick from a
+  list.
+- [fnm](https://github.com/Schniz/fnm) switches Node.js versions when you
+  change into a project that pins one.
+- [SDKMAN](https://sdkman.io/) switches Java versions on macOS. When you change
+  into a project with a `.sdkmanrc` file, it switches to that project's Java.
+  The health check is turned off, because it makes a network request on every
+  `sdk` call, which slows down each new shell and every `cd`.
+- [direnv](https://direnv.net/) loads environment variables from a project's
+  `.envrc` file. It's only enabled if it's installed.
+- [tmux](https://github.com/tmux/tmux) splits one terminal into many. The
+  prefix key is `Ctrl+A`, and copy mode uses Vim keys.
+  [tpm](https://github.com/tmux-plugins/tpm) manages its plugins, and
+  [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect) restores
+  your sessions after a reboot.
+
+## Neovim
+
+The [Neovim](https://neovim.io/) config started from
+[kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim). Each plugin has
+its own file in `lua/plugins/`, and `lazy-lock.json` pins every plugin to an
+exact version.
+
+### Core
+
+- [lazy.nvim](https://github.com/folke/lazy.nvim) installs and loads the
+  plugins.
+- [catppuccin/nvim](https://github.com/catppuccin/nvim) is the color scheme,
+  in its Macchiato flavor.
+- [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) is the status
+  line.
+- [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) adds file
+  icons to the pickers and the status line.
+- [guess-indent.nvim](https://github.com/NMAC427/guess-indent.nvim) detects
+  each file's indentation.
+
+### Finding files
+
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua) searches files, text,
+  buffers, help, diagnostics and symbols. Its shortcuts start with `;`, for
+  example `;f` for files and `;r` to search text.
+- [oil.nvim](https://github.com/stevearc/oil.nvim) lets you edit a directory
+  as if it were a text file. Press `sf` to open it.
+
+### Language support
+
+- [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) provides the
+  settings for each language server.
+- [mason.nvim](https://github.com/mason-org/mason.nvim),
+  [mason-lspconfig.nvim](https://github.com/mason-org/mason-lspconfig.nvim)
+  and
+  [mason-tool-installer.nvim](https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim)
+  install the language servers, linters and formatters.
+- [fidget.nvim](https://github.com/j-hui/fidget.nvim) shows language server
+  progress in the corner.
+- [lazydev.nvim](https://github.com/folke/lazydev.nvim) teaches the Lua
+  language server about the Neovim API, for editing this config.
+- [blink.cmp](https://github.com/Saghen/blink.cmp) shows completions, and
+  [LuaSnip](https://github.com/L3MON4D3/LuaSnip) expands snippets.
+- [nvim-java](https://github.com/nvim-java/nvim-java) sets up Java support.
+  It downloads the Java language server and the JDK it runs on. A Gradle
+  script fixes the source folders of Grails projects, so that Java code can
+  see compiled Groovy classes.
+- [grails.nvim](https://github.com/vdassios/grails.nvim) adds Grails support:
+  GSP highlighting, `:GrailsAlternate` to jump between related files, and
+  [grails-language-server](https://github.com/vdassios/grails-language-server)
+  for Groovy and GSP. Run `:GrailsInstallServer` to download the server. If
+  `~/Projects/grails.nvim` exists, the plugin loads from there instead of
+  GitHub.
+
+The configured language servers are `lua_ls`, `ts_ls`, `vue_ls`, `cssls`,
+`tailwindcss`, `html` (also used in GSP files), `astro`, `svelte`, `pyright`,
+`yamlls`, `tombi`, `jdtls`, `grails_ls` and `grails`.
+
+### Formatting and linting
+
+- [conform.nvim](https://github.com/stevearc/conform.nvim) formats files when
+  you save, except C, C++, Vue and Java files. It uses `stylua`, `isort`,
+  `black`, `prettierd`, `prettier`, `dockerfmt`, `rustywind`, `tombi`,
+  `markdownlint` and `beautysh`.
+- [nvim-lint](https://github.com/mfussenegger/nvim-lint) runs `eslint_d`,
+  `markdownlint`, `jsonlint`, `hadolint` and `vale`.
+
+### Editing
+
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+  provides syntax highlighting and indentation.
+- [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) marks changed
+  lines and lets you stage, reset, preview and blame them.
+- [nvim-autopairs](https://github.com/windwp/nvim-autopairs) closes brackets
+  and quotes for you.
+- [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)
+  formats headings, code blocks, tables and checkboxes in Markdown files.
+
+## Other tools
+
+- [yazi](https://github.com/sxyazi/yazi) is the file manager. Press `Super+F`
+  to open it, or type `y` in a shell to open it and stay in the directory you
+  end up in. It also opens folders from other apps and replaces the system file
+  picker. Its theme is pinned in `package.toml`. Run `ya pkg install` to
+  restore it.
+- [btop](https://github.com/aristocratos/btop) shows CPU, memory and process
+  usage. Press `Super+T` to open it.
+- [lazydocker](https://github.com/jesseduffield/lazydocker) manages Docker
+  containers. Press `Super+D` to open it.
+- [Obsidian](https://obsidian.md/) is for notes. Press `Super+O` to open it.
+- [Signal](https://signal.org/) is for messages. Press `Super+G` to open it.
+- [pamixer](https://github.com/cdemoulins/pamixer),
+  [gum](https://github.com/charmbracelet/gum) and [jq](https://jqlang.org/) are
+  used by Waybar and the helper scripts.
+
+## Scripts and services
+
+- `scripts/` holds the helper scripts that Hyprland, Waybar and systemd run:
+  launchers, the battery monitor, the screen lock and a time zone picker. They
+  need to be installed by hand. See [`scripts/README.md`](scripts/README.md).
+- `scripts/first-run/` holds scripts that you run once on a new machine. On
+  Arch, they set up a signed boot chain in which the TPM chip unlocks the disk,
+  so the login screen is the only password prompt. On macOS, `macos.sh`
+  installs the apps and changes system settings. See
+  [`scripts/first-run/README.md`](scripts/first-run/README.md).
+- `linux/systemd/` holds two user services: a timer that warns you when the
+  battery is low, and the Elephant service for Walker.
+- `linux/applications/` makes yazi the default app for folders.
+- `linux/portals/` sends "Open file" and "Save as" dialogs to yazi.
+- `common/themes/` holds a qBittorrent theme.
